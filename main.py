@@ -2,13 +2,15 @@ import os
 import random
 import time
 
-import ansi
+import terminal
 from common import print_error
 
 from games.base_game import BaseGame
 from games.typing_game import TypingGame
 
 import procedures
+from status import STATUS_CODE_TO_STRING_TABLE
+
 
 def init():
     pass
@@ -43,12 +45,16 @@ def loop():
             break
 
 def destroy():
+    terminal.erase_whole_screen()
+    terminal.reset_cursor_to_top_left()
     print("Goodbye!")
     exit()
 
 def main():
     # barebones application framework
     # initialization -> main loop -> destruction
+    terminal.erase_whole_screen()
+    terminal.reset_cursor_to_top_left()
     init()
     loop()
     destroy()

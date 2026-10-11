@@ -1,5 +1,5 @@
 # Utility functions
-import ansi
+import terminal
 import random
 
 from status import STATUS_INDEX_OUT_OF_BOUNDS, STATUS_SUCCESS
@@ -33,7 +33,7 @@ def shuffle(the_list):
 
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
-    print(ansi.ansify(str(value)).fgcol(ansi.COLOR_RED).bold(), end=end)
+    print(terminal.ansify(str(value)).fgcol(terminal.COLOR_RED).bold(), end=end)
 
 def print_separator(c="*", count=20):
     print(c * count)

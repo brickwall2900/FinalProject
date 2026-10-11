@@ -1,5 +1,6 @@
 import os
 
+import terminal
 from common import print_error, shuffle
 from data import word_bank
 from games.base_game import BaseGame
@@ -121,14 +122,31 @@ class TypingGame(BaseGame):
         timestamp_start = time.time()
         user_typed_words = []
         for word in words:
-            print("TYPE THE WORD BELOW THEN PRESS [Enter]")
-            print(word)
+            terminal.erase_whole_screen()
+            terminal.reset_cursor_to_top_left()
+            max_width = max(terminal.get_string_visual_width("TYPE THE WORD BELOW THEN PRESS [Enter]"),
+                            terminal.get_string_visual_width(word))
+
+            width = terminal.get_width()
+            height = terminal.get_height()
+            pos_x = width / 2 - max_width / 2
+            pos_y = height / 2
+
+            terminal.tgfx_print_text("======================================", pos_x, pos_y - 1)
+            terminal.tgfx_print_text("TYPE THE WORD BELOW THEN PRESS [Enter]", pos_x, pos_y)
+            terminal.tgfx_print_text(word, pos_x, pos_y + 1)
+            terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
+            terminal.tgfx_print_text("======================================", pos_x, pos_y + 4)
+            terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
 
             user_input = input()
             user_typed_words.append(user_input)
 
+        terminal.erase_whole_screen()
+        terminal.reset_cursor_to_top_left()
+
         time_taken = time.time() - timestamp_start
-        print("Congratulations! You took %.2f seconds to type all words.".format(time_taken))
+        print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken)).bold().fgcol(terminal.COLOR_YELLOW))
 
 
     def destroy(self):
