@@ -5,6 +5,7 @@ import time
 import games.typing_game
 
 import common
+from ansi import ansify, COLOR_RED, COLOR_GREEN
 from procedures import defproc, print_procedures, ask_and_execute_procedure
 
 
@@ -13,7 +14,7 @@ def init():
 
 def loop():
     procedures = [
-        defproc(1, "Hello", init),
+        defproc(1, ansify("Hello").bold().underline().fgcol(COLOR_RED).bgcol(COLOR_GREEN), init),
         defproc(0, "Exit", None)
     ]
 
