@@ -11,7 +11,7 @@ STATUS_ALREADY_EXISTS               = 0x3
 
 def to_string(e):
     if e == STATUS_SUCCESS:
-        return "The operation was successful"
+        return "The operation was successful."
     elif e == STATUS_INDEX_OUT_OF_BOUNDS:
         return "The operation was accessing a list with an index out-of-bounds."
     elif e == STATUS_FILE_NOT_FOUND:
