@@ -31,6 +31,8 @@ def try_loading_words():
             if line.startswith("#"):
                 continue
 
+            line = line.strip()
+
             word_count += 1
             words.append(line)
 
