@@ -6,18 +6,14 @@ INDEX_FUNCTION      = 2
 INDEX_ARGS_TUPLE    = 3
 
 # taken from exercise 5
-def print_procedures(header, separator_char, procedures):
+def print_procedures(header, separator_char, procedures, after_header=None):
     if header is not None:
         print(f"{separator_char * 5} {header} {separator_char * 5}")
 
-    # I used a custom "procedure" system
-    # where each procedure is stored in a list
-    # and its value is another list containing
-    # the option number, procedure name, and function to call.
+    if after_header is not None:
+        print(after_header)
+        print()
 
-    # it is really useful since it allows for easy implementation of functions
-    # and choices like this one so I don't have to check against an if-statement
-    # each time I implement a new choice.
     if len(procedures) == 0:
         print("<none>")
         return
