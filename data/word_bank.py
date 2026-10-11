@@ -1,14 +1,12 @@
 import os
 
+from status import STATUS_ALREADY_EXISTS, STATUS_FILE_NOT_FOUND, STATUS_SUCCESS
+
 words = []
 loaded = False
 
 WORD_BANK_FILENAME = os.path.join("data", "words_alpha.txt")
 BUFFER_SIZE = 4096 * 4
-
-ERROR_SUCCESS           = 0
-ERROR_FILE_NOT_FOUND    = 1
-ERROR_LOADED            = 2
 
 # Try loading words if it has already been loaded.
 # Skip loading if it has been loaded.
@@ -16,10 +14,10 @@ def try_loading_words():
     global loaded
 
     if loaded:
-        return ERROR_LOADED, None
+        return STATUS_ALREADY_EXISTS, None
 
     if not os.path.exists(WORD_BANK_FILENAME):
-        return ERROR_FILE_NOT_FOUND, None
+        return STATUS_FILE_NOT_FOUND, None
 
     word_count = 0
     print("Loading words...")
@@ -39,4 +37,4 @@ def try_loading_words():
     print(f"{word_count} words loaded successfully!")
     loaded = True
 
-    return ERROR_SUCCESS, word_count
+    return STATUS_SUCCESS, word_count
