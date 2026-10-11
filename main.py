@@ -2,25 +2,39 @@ import os
 import random
 import time
 
-import games.typing_game
+import ansi
+from common import print_error
 
-import common
-from ansi import ansify, COLOR_RED, COLOR_GREEN
-from procedures import defproc, print_procedures, ask_and_execute_procedure
+from games.base_game import BaseGame
+from games.typing_game import TypingGame
 
+import procedures
 
 def init():
     pass
 
+def game_procedure(game_class):
+    def the_procedure():
+        game = game_class()
+
+        if game.init():
+            game.run()
+        else:
+            print_error("The game could not be ran.")
+
+        game.destroy()
+
+    return the_procedure
+
 def loop():
-    procedures = [
-        defproc(1, ansify("Hello").bold().underline().fgcol(COLOR_RED).bgcol(COLOR_GREEN), init),
-        defproc(0, "Exit", None)
+    procedure_list = [
+        procedures.defproc(1, "Typing Game", game_procedure(TypingGame)),
+        procedures.defproc(0, "Exit", None)
     ]
 
     while True:
-        print_procedures("Medicine Inventory System", "#", procedures)
-        success, option = ask_and_execute_procedure(procedures)
+        procedures.print_procedures(" ++ Game Selection ++ ", "..", procedure_list)
+        success, option = procedures.ask_and_execute_procedure(procedure_list)
         if not success:
             print("Invalid option")
             continue
