@@ -2,27 +2,28 @@ import os
 
 from status import STATUS_ALREADY_EXISTS, STATUS_FILE_NOT_FOUND, STATUS_SUCCESS
 
+BUFFER_SIZE = 4096 * 4
+WORD_BANK_FILEPATH_DEFAULT = os.path.join("data", "english3.txt")
+
 words = []
 loaded = False
-
-WORD_BANK_FILENAME = os.path.join("data", "words_alpha.txt")
-BUFFER_SIZE = 4096 * 4
+loaded_filepath = WORD_BANK_FILEPATH_DEFAULT
 
 # Try loading words if it has already been loaded.
 # Skip loading if it has been loaded.
-def try_loading_words():
+def try_loading_words(word_bank_filepath = WORD_BANK_FILEPATH_DEFAULT):
     global loaded
 
     if loaded:
         return STATUS_ALREADY_EXISTS, None
 
-    if not os.path.exists(WORD_BANK_FILENAME):
+    if not os.path.exists(word_bank_filepath):
         return STATUS_FILE_NOT_FOUND, None
 
     word_count = 0
     print("Loading words...")
 
-    with open(WORD_BANK_FILENAME, "rt", 1) as file:
+    with open(word_bank_filepath, "rt", 1) as file:
         while True:
             line = file.readline()
             if len(line) <= 0:
