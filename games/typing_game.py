@@ -17,7 +17,8 @@ RULES = "The Typing Game tests your typing skills by you typing words with speed
 class TypingGame(BaseGame):
     words_in_random = True
     letter_count_to_include = [3, 4, 5]
-    word_count_per_letter_count = { }
+    word_count_per_letter_count = { 3: 7, 4: 7, 5: 7 }
+    score_per_letter_count = { 3: 2, 4: 5, 5: 7 }
 
     def init(self):
         error_code, word_count = word_bank.try_loading_words()
@@ -67,9 +68,7 @@ class TypingGame(BaseGame):
         result = []
 
         for letter_count in self.letter_count_to_include:
-            status_code, words = self.__pick_words(self.word_count_per_letter_count[letter_count]
-                                               if letter_count in self.word_count_per_letter_count else 7,
-                                               letter_count)
+            status_code, words = self.__pick_words(self.word_count_per_letter_count[letter_count], letter_count)
             if status_code == STATUS_SUCCESS:
                 result.extend(words)
             else:
@@ -82,14 +81,35 @@ class TypingGame(BaseGame):
 
         return STATUS_SUCCESS, result
 
+    def __validate_invariants(self):
+        if len(self.letter_count_to_include) <= 0:
+            print_error("At least one n-letter count must be specified.")
+            return STATUS_UNDERPOPULATED
+
+        for letter_count in self.letter_count_to_include:
+            if not letter_count in self.word_count_per_letter_count:
+                print_error(f"The word count for {letter_count}-letter words is unspecified.")
+                return STATUS_UNDERPOPULATED
+
+            if not letter_count in self.score_per_letter_count:
+                print_error(f"The score for {letter_count}-letter words is unspecified.")
+                return STATUS_UNDERPOPULATED
+
+        return STATUS_SUCCESS
+
     def game(self):
+        status_code = self.__validate_invariants()
+
+        if status_code != STATUS_SUCCESS:
+            print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
+            return
+
         status_code, words = self.__build_word_sequence()
 
         if status_code != STATUS_SUCCESS:
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
-        print(words)
         print("The typing game starts in...")
         time.sleep(0.5)
         for i in range(3, 0, -1):
@@ -98,6 +118,17 @@ class TypingGame(BaseGame):
 
         print("GOO!!")
 
+        timestamp_start = time.time()
+        user_typed_words = []
+        for word in words:
+            print("TYPE THE WORD BELOW THEN PRESS [Enter]")
+            print(word)
+
+            user_input = input()
+            user_typed_words.append(user_input)
+
+        time_taken = time.time() - timestamp_start
+        print("Congratulations! You took %.2f seconds to type all words.".format(time_taken))
 
 
     def destroy(self):
