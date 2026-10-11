@@ -3,6 +3,7 @@ from common import safeint
 INDEX_OPTION        = 0
 INDEX_NAME          = 1
 INDEX_FUNCTION      = 2
+INDEX_ARGS_TUPLE    = 3
 
 # taken from exercise 5
 def print_procedures(header, separator_char, procedures):
@@ -25,8 +26,8 @@ def print_procedures(header, separator_char, procedures):
         print(f"{str(procedure[INDEX_OPTION])}. {procedure[INDEX_NAME]}")
 
 # defines a procedure
-def defproc(option, name, func):
-    return [ option, name, func ]
+def defproc(option, name, func, *args):
+    return [ option, name, func, args ]
 
 # finds a procedure corresponding to a given choice
 def find_procedure(procedures, choice):
@@ -44,7 +45,8 @@ def do_execute_procedure(procedures, choice):
             return False
 
         if procedure[INDEX_FUNCTION] is not None:
-            procedure[INDEX_FUNCTION]()
+            # TODO: allowed by lab instructor?
+            procedure[INDEX_FUNCTION](*procedure[INDEX_ARGS_TUPLE])
 
         print()
         return True
