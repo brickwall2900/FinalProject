@@ -149,19 +149,27 @@ def get_string_visual_width(text: str):
 
     return width
 
-def get_wrap_lines(text, max_width=None):
+def get_wrap_lines(text, max_width=None, word_wrap=False):
     if max_width is None:
         max_width = 999999
 
     if max_width < 0:
         return STATUS_OUT_OF_BOUNDS, -1
 
+    lines = 1
     str_pos = 0
     str_len = len(text)
-    lines = 1
+    word_wrapped = False
     while str_pos < str_len:
         current_width = min(max_width, str_len)
+        if word_wrap:
+            word_wrapped = True
+            while current_width + str_pos < str_len and not text[current_width + str_pos].isspace():
+                current_width -= 1
         str_pos += current_width
+        if word_wrapped:
+            str_pos += 1
+            word_wrapped = False
         lines += 1
 
     return STATUS_SUCCESS, lines
@@ -183,7 +191,7 @@ def tgfx_draw_rect(x, y, width, height, char = "#", inner_char = " "):
 
     return STATUS_SUCCESS
 
-def tgfx_print_text(text, x, y, max_width=None):
+def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
     if max_width is None:
         max_width = 999999
 
@@ -194,11 +202,19 @@ def tgfx_print_text(text, x, y, max_width=None):
     pos_y = y
     str_pos = 0
     str_len = len(text)
+    word_wrapped = False
     while str_pos < str_len:
         put_cursor_to(pos_x, pos_y)
         current_width = min(max_width, str_len)
+        if word_wrap:
+            word_wrapped = True
+            while current_width+str_pos < str_len and not text[current_width+str_pos].isspace():
+                current_width -= 1
         print(text[str_pos:current_width+str_pos], end="")
         str_pos += current_width
+        if word_wrapped:
+            str_pos += 1
+            word_wrapped = False
         pos_y += 1
 
     return STATUS_SUCCESS
