@@ -13,7 +13,16 @@ from status import STATUS_CODE_TO_STRING_TABLE
 
 
 def init():
+    # width = terminal.get_width()
+    # height = terminal.get_height()
+    # status = terminal.tgfx_draw_rect((width / 2) - 5, (height / 2) - 10, 10, 20)
+    # print(STATUS_CODE_TO_STRING_TABLE[status])
+    # terminal.tgfx_print_text("the quick brown fox jumped over the lazy dog!", (width / 2) - 5 + 2, (height / 2), 6)
+    # print(STATUS_CODE_TO_STRING_TABLE[status])
+    if not terminal.use_advanced_terminal_graphics:
+        print("Fancy terminal graphics are disabled!")
     pass
+
 
 def game_procedure(game_class):
     def the_procedure():
