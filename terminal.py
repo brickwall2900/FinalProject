@@ -32,6 +32,8 @@ COLOR_CYAN              = 6
 COLOR_WHITE             = 7
 COLOR_DEFAULT           = 9
 
+use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True"))
+
 class AnsiBuilder:
     __flags = 0
     __fg_color = COLOR_DEFAULT
@@ -63,6 +65,10 @@ class AnsiBuilder:
         self.set_flag(FLAG_UNDERLINE)
         return self
 
+    def persist(self):
+        self.set_flag(FLAG_NOT_RESETS)
+        return self
+
     def fgcol(self, color):
         self.set_flag(FLAG_FG_COLORED)
         self.__fg_color = color
@@ -92,22 +98,34 @@ class AnsiBuilder:
     def __str__(self) -> str:
         return (self.__compute_graphic_controls()
                 + self.contents
-                + ("" if self.has_flag(FLAG_NOT_RESETS) else ESCAPE_RESET_GRAPHICS))
+                + ("" if self.has_flag(FLAG_NOT_RESETS) else ESCAPE_RESET_GRAPHICS)) \
+            if use_advanced_terminal_graphics else self.contents
 
-def ansify(contents):
+def ansify(contents = None):
     return AnsiBuilder(contents if contents is not None else "")
 
 def reset_cursor_to_top_left():
+    if not use_advanced_terminal_graphics:
+        return
     print(ESCAPE_SEQUENCE + "H", end="")
 
 def erase_whole_screen():
+    if not use_advanced_terminal_graphics:
+        return
     print(ESCAPE_SEQUENCE + "2J", end="")
 
 def put_cursor_to(x, y):
+    if not use_advanced_terminal_graphics:
+        return
     print(ESCAPE_SEQUENCE + f"{int(y)};{int(x)}H", end="")
 
 def reset_graphics():
+    if not use_advanced_terminal_graphics:
+        return
     print(ESCAPE_RESET_GRAPHICS, end="")
+
+def flush():
+    print("", end="", flush=True)
 
 def get_width():
     if os.isatty(1):
@@ -158,13 +176,21 @@ def tgfx_print_text(text, x, y, max_width=None):
     pos_x = x
     pos_y = y
     max_x = x + max_width
-    for c in text:
-        if pos_x < max_x:
-            put_cursor_to(pos_x, pos_y)
-            print(c)
-            pos_x += 1
-        else:
-            pos_y += 1
-            pos_x = x
+    str_pos = 0
+    str_len = len(text)
+    while str_pos < str_len:
+        put_cursor_to(pos_x, pos_y)
+        current_width = min(max_width, str_len)
+        print(text[str_pos:current_width+str_pos], end="")
+        str_pos += current_width
+        pos_y += 1
+    # for c in text:
+    #     if pos_x < max_x:
+    #         put_cursor_to(pos_x, pos_y)
+    #         print(c, end="")
+    #         pos_x += 1
+    #     else:
+    #         pos_y += 1
+    #         pos_x = x
 
     return STATUS_SUCCESS
