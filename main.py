@@ -9,7 +9,7 @@ from games.base_game import BaseGame
 from games.typing_game import TypingGame
 
 import procedures
-from status import STATUS_CODE_TO_STRING_TABLE
+from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS
 
 
 def init():
@@ -43,11 +43,13 @@ def loop():
         procedures.defproc(0, "Exit", None)
     ]
 
+    before_header = None
     while True:
-        procedures.print_procedures(" ++ Game Selection ++ ", "..", procedure_list)
-        success, option = procedures.ask_and_execute_procedure(procedure_list)
-        if not success:
-            print("Invalid option")
+        procedures.print_procedures(" ++ Game Selection ++ ", "..", procedure_list,
+                                    before_header=before_header)
+        status_code, option = procedures.ask_and_execute_procedure(procedure_list)
+        if status_code != STATUS_SUCCESS:
+            before_header = "Invalid option."
             continue
 
         if option == 0: # exit option

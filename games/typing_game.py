@@ -42,12 +42,13 @@ class TypingGame(BaseGame):
             procedures.defproc(0, "Exit", None)
         ]
 
+        before_header = None
         while True:
             procedures.print_procedures("Typing Game!!", "+", procedures_list,
-                                        after_header=RULES)
-            success, option = procedures.ask_and_execute_procedure(procedures_list)
-            if not success:
-                print("Invalid option")
+                                        before_header=before_header, after_header=RULES)
+            status_code, option = procedures.ask_and_execute_procedure(procedures_list)
+            if status_code != STATUS_SUCCESS:
+                before_header = "Invalid option."
                 continue
 
             if option == 0:  # exit option
