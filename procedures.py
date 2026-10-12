@@ -10,7 +10,7 @@ INDEX_FUNCTION      = 2
 INDEX_ARGS_TUPLE    = 3
 
 def print_ask_execute_procedures(header, separator_char, procedures, prompt="Enter a choice: ",
-                                 before_header=None, after_header=None):
+                                 before_header=None, after_header=None, header_offset=0):
     if terminal.use_advanced_terminal_graphics:
         # terminal.erase_whole_screen()
         header_width = terminal.get_string_visual_width(header)
@@ -25,13 +25,12 @@ def print_ask_execute_procedures(header, separator_char, procedures, prompt="Ent
         _, before_header_lines = terminal.get_wrap_lines(before_header or "", max_width=max_width, word_wrap=True)
         mpos_y = pos_y + 2 + after_header_lines
 
-
         # terminal.tgfx_draw_rect(pos_x, pos_y, max_width, mpos_y - pos_y - 2 + len(procedures), char=" ") # clear rect
         if before_header is not None:
             terminal.tgfx_print_text(before_header, pos_x, pos_y - before_header_lines, max_width=max_width, word_wrap=True)
 
         terminal.tgfx_print_text(border, pos_x, pos_y - 1)
-        terminal.tgfx_print_text(header, pos_x + (max_width / 2) - (header_width / 2), pos_y)
+        terminal.tgfx_print_text(header, pos_x + (max_width / 2) - ((header_width + header_offset) / 2), pos_y)
         terminal.tgfx_print_text((separator_char * max_width)[:max_width], pos_x, pos_y + 1)
 
         if after_header is not None:

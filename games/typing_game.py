@@ -118,9 +118,9 @@ class TypingGame(BaseGame):
             given_score = self.score_per_letter_count[letter_count]
             if correct_input == user_input:
                 score += given_score
-            judgement_table = (correct_input, user_input, given_score if correct_input == user_input else 0)
+            judgement_table.append((correct_input, user_input, given_score if correct_input == user_input else 0))
 
-        return STATUS_SUCCESS, score
+        return STATUS_SUCCESS, score, judgement_table
 
     def __print_countdown(self):
         max_width = max(terminal.get_string_visual_width("The typing game starts in..."),
@@ -182,11 +182,36 @@ class TypingGame(BaseGame):
             print("> ", end="")
 
     def __print_congrats(self, time_taken, score, judgement_table):
-        if terminal.use_advanced_terminal_graphics:
-            print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
-                  .bold().fgcol(terminal.COLOR_YELLOW))
-            print(terminal.ansify("Your score is {:d}. Nice!!".format(score))
-                  .bold().fgcol(terminal.COLOR_YELLOW))
+        procedures_list = [
+            procedures.defproc(1, "View Score Table", self.__view_score_table, time_taken, score, judgement_table),
+            procedures.defproc(0, "Exit", None)
+        ]
+
+        after_header = str(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
+              .bold().fgcol(terminal.COLOR_YELLOW))
+        after_header += "\n\n"
+        after_header += str(terminal.ansify("Your score is {:d}. Nice!!".format(score))
+              .bold().fgcol(terminal.COLOR_YELLOW))
+
+        before_header = None
+        while True:
+            status_code, option = procedures.print_ask_execute_procedures(str(terminal.ansify("CONGRATULATIONS!!")
+                                                                          .bold().fgcol(terminal.COLOR_YELLOW)),
+                                                                          "+",
+                                                                          procedures_list,
+                                                                          before_header=before_header,
+                                                                          after_header=after_header,
+                                                                          header_offset=-len(str(
+                                                                              terminal.ansify()
+                                                                              .bold().fgcol(terminal.COLOR_YELLOW)))+2)
+            if status_code != STATUS_SUCCESS:
+                before_header = "Invalid option."
+                continue
+
+            break
+
+    def __view_score_table(self, time_taken, score, judgement_table):
+
         pass
 
     def game(self):

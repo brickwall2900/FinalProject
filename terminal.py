@@ -141,7 +141,7 @@ def get_height():
     else:
         return DEFAULT_HEIGHT
 
-def get_string_visual_width(text: str):
+def get_string_visual_width(text: str) -> int:
     width = 0
     for c in text:
         if c.isascii() and c.isprintable():
