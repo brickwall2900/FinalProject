@@ -149,6 +149,23 @@ def get_string_visual_width(text: str):
 
     return width
 
+def get_wrap_lines(text, max_width=None):
+    if max_width is None:
+        max_width = 999999
+
+    if max_width < 0:
+        return STATUS_OUT_OF_BOUNDS, -1
+
+    str_pos = 0
+    str_len = len(text)
+    lines = 1
+    while str_pos < str_len:
+        current_width = min(max_width, str_len)
+        str_pos += current_width
+        lines += 1
+
+    return STATUS_SUCCESS, lines
+
 def tgfx_draw_rect(x, y, width, height, char = "#", inner_char = " "):
     if width < 0 or height < 0:
         return STATUS_OUT_OF_BOUNDS
@@ -175,7 +192,6 @@ def tgfx_print_text(text, x, y, max_width=None):
 
     pos_x = x
     pos_y = y
-    max_x = x + max_width
     str_pos = 0
     str_len = len(text)
     while str_pos < str_len:
@@ -184,13 +200,5 @@ def tgfx_print_text(text, x, y, max_width=None):
         print(text[str_pos:current_width+str_pos], end="")
         str_pos += current_width
         pos_y += 1
-    # for c in text:
-    #     if pos_x < max_x:
-    #         put_cursor_to(pos_x, pos_y)
-    #         print(c, end="")
-    #         pos_x += 1
-    #     else:
-    #         pos_y += 1
-    #         pos_x = x
 
     return STATUS_SUCCESS
