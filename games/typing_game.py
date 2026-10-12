@@ -29,7 +29,7 @@ class TypingGame(BaseGame):
         if not success:
             if error_code == STATUS_FILE_NOT_FOUND:
                 print_error("Word bank not found. "
-                            "Please verify directory structure and that ./data/words_alpha.txt exists.")
+                            f"Please verify directory structure and that the word bank file exists.")
 
         return success
 
@@ -98,6 +98,83 @@ class TypingGame(BaseGame):
 
         return STATUS_SUCCESS
 
+    def __judge(self, correct_input_list, user_input_list):
+        if len(correct_input_list) < len(user_input_list):
+            return STATUS_UNDERPOPULATED, 0
+
+        score = 0
+        for i in range(len(correct_input_list)):
+            correct_input = correct_input_list[i]
+            user_input = user_input_list[i]
+            letter_count = len(correct_input)
+            if not letter_count in self.score_per_letter_count:
+                print_error(f"Score per {letter_count}-letter word is missing right now... How come?")
+                return STATUS_UNDERPOPULATED, 0
+            given_score = self.score_per_letter_count[letter_count]
+            if correct_input == user_input:
+                score += given_score
+
+        return STATUS_SUCCESS, score
+
+    def __do_countdown(self):
+        max_width = max(terminal.get_string_visual_width("The typing game starts in..."),
+                        terminal.get_string_visual_width("3... 2... 1... GO!!!!"))
+        width = terminal.get_width()
+        height = terminal.get_height()
+        pos_x = width / 2 - max_width / 2
+        pos_y = height / 2
+        countdown = ""
+
+        if not terminal.use_advanced_terminal_graphics:
+            print("The typing game starts in...")
+
+        for i in range(4, 0, -1):
+            if i == 1:
+                countdown += str(terminal.ansify("GO!!!!").bold()) \
+                    if terminal.use_advanced_terminal_graphics else "GO!!!!"
+            elif (i - 1) < 4:
+                countdown += str(terminal.ansify(f"{i - 1}... ").bold().fgcol(terminal.COLOR_RED if i == 3 else
+                                                                              terminal.COLOR_YELLOW if i == 2 else
+                                                                              terminal.COLOR_GREEN)) \
+                    if terminal.use_advanced_terminal_graphics else f"{i - 1}... "
+            if terminal.use_advanced_terminal_graphics:
+                terminal.erase_whole_screen()
+                terminal.tgfx_print_text("=============================", pos_x, pos_y - 1)
+                terminal.tgfx_print_text("The typing game starts in...", pos_x, pos_y)
+                terminal.tgfx_print_text(countdown, pos_x, pos_y + 1)
+                terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
+                terminal.tgfx_print_text("=============================", pos_x, pos_y + 4)
+                terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
+                terminal.flush()
+            else:
+                print(countdown)
+            time.sleep(0.5)
+
+    def __print_word(self, word):
+        if terminal.use_advanced_terminal_graphics:
+            terminal.erase_whole_screen()
+            terminal.reset_cursor_to_top_left()
+            max_width = max(terminal.get_string_visual_width("TYPE THE WORD BELOW THEN PRESS [Enter]"),
+                            terminal.get_string_visual_width(word))
+
+            width = terminal.get_width()
+            height = terminal.get_height()
+            pos_x = width / 2 - max_width / 2
+            pos_y = height / 2
+
+            terminal.tgfx_print_text("======================================", pos_x, pos_y - 1)
+            terminal.tgfx_print_text("TYPE THE WORD BELOW THEN PRESS [Enter]", pos_x, pos_y)
+            print(terminal.ansify().bold().persist(), end="")
+            terminal.tgfx_print_text(word, pos_x, pos_y + 1)
+            print(terminal.ESCAPE_RESET_GRAPHICS, end="")
+            terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
+            terminal.tgfx_print_text("======================================", pos_x, pos_y + 4)
+            terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
+        else:
+            print("TYPE THE WORD BELOW THEN PRESS [Enter]")
+            print(word)
+            print("> ", end="")
+
     def game(self):
         status_code = self.__validate_invariants()
 
@@ -111,33 +188,12 @@ class TypingGame(BaseGame):
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
-        print("The typing game starts in...")
-        time.sleep(0.5)
-        for i in range(3, 0, -1):
-            print(i)
-            time.sleep(0.5)
-
-        print("GOO!!")
+        self.__do_countdown()
 
         timestamp_start = time.time()
         user_typed_words = []
         for word in words:
-            terminal.erase_whole_screen()
-            terminal.reset_cursor_to_top_left()
-            max_width = max(terminal.get_string_visual_width("TYPE THE WORD BELOW THEN PRESS [Enter]"),
-                            terminal.get_string_visual_width(word))
-
-            width = terminal.get_width()
-            height = terminal.get_height()
-            pos_x = width / 2 - max_width / 2
-            pos_y = height / 2
-
-            terminal.tgfx_print_text("======================================", pos_x, pos_y - 1)
-            terminal.tgfx_print_text("TYPE THE WORD BELOW THEN PRESS [Enter]", pos_x, pos_y)
-            terminal.tgfx_print_text(word, pos_x, pos_y + 1)
-            terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
-            terminal.tgfx_print_text("======================================", pos_x, pos_y + 4)
-            terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
+            self.__print_word(word)
 
             user_input = input()
             user_typed_words.append(user_input)
@@ -146,7 +202,14 @@ class TypingGame(BaseGame):
         terminal.reset_cursor_to_top_left()
 
         time_taken = time.time() - timestamp_start
-        print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken)).bold().fgcol(terminal.COLOR_YELLOW))
+        status_code, score = self.__judge(words, user_typed_words)
+        if status_code == STATUS_SUCCESS:
+            print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
+                  .bold().fgcol(terminal.COLOR_YELLOW))
+            print(terminal.ansify("Your score is {:d}. Nice!!".format(score))
+                  .bold().fgcol(terminal.COLOR_YELLOW))
+        else:
+            print_error(f"The score could not be calculated: {status_code}")
 
 
     def destroy(self):
