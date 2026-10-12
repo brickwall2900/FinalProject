@@ -24,7 +24,6 @@ def print_procedures(header, separator_char, procedures, before_header=None, aft
         _, before_header_lines = terminal.get_wrap_lines(before_header or "", max_width=max_width, word_wrap=True)
         mpos_y = pos_y + 2 + after_header_lines
 
-        pos_y += before_header_lines
 
         # terminal.tgfx_draw_rect(pos_x, pos_y, max_width, mpos_y - pos_y - 2 + len(procedures), char=" ") # clear rect
         if before_header is not None:

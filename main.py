@@ -51,6 +51,8 @@ def loop():
         if status_code != STATUS_SUCCESS:
             before_header = "Invalid option."
             continue
+        else:
+            before_header = None
 
         if option == 0: # exit option
             break
