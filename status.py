@@ -10,6 +10,7 @@ STATUS_FILE_NOT_FOUND               = 0x2
 STATUS_ALREADY_EXISTS               = 0x3
 STATUS_UNDERPOPULATED               = 0x4
 STATUS_OUT_OF_BOUNDS                = 0x5
+STATUS_BAD_USER_INPUT               = 0x6
 
 STATUS_CODE_TO_STRING_TABLE = {
     STATUS_SUCCESS: "The operation was successful.",
@@ -17,7 +18,8 @@ STATUS_CODE_TO_STRING_TABLE = {
     STATUS_FILE_NOT_FOUND: "The operation requires a file %s that is not found on disk.",
     STATUS_ALREADY_EXISTS: "The operation expects the object to not exist, but it already exists.",
     STATUS_UNDERPOPULATED: "The operation expects a list to be populated by a certain size but did not meet that requirement.",
-    STATUS_OUT_OF_BOUNDS: "The operation was accessing something that is out-of-bounds."
+    STATUS_OUT_OF_BOUNDS: "The operation was accessing something that is out-of-bounds.",
+    STATUS_BAD_USER_INPUT: "The operation required something from the user but the user gave malformed input.",
 }
 
 STATUS_CODE_TO_LITERAL_TABLE = {
@@ -26,5 +28,6 @@ STATUS_CODE_TO_LITERAL_TABLE = {
     STATUS_FILE_NOT_FOUND: "STATUS_FILE_NOT_FOUND",
     STATUS_ALREADY_EXISTS: "STATUS_ALREADY_EXISTS",
     STATUS_UNDERPOPULATED: "STATUS_UNDERPOPULATED",
-    STATUS_OUT_OF_BOUNDS: "STATUS_OUT_OF_BOUNDS"
+    STATUS_OUT_OF_BOUNDS: "STATUS_OUT_OF_BOUNDS",
+    STATUS_BAD_USER_INPUT: "STATUS_BAD_USER_INPUT",
 }
