@@ -33,9 +33,10 @@ def try_loading_words(word_bank_filepath = WORD_BANK_FILEPATH_DEFAULT):
                 continue
 
             line = line.strip()
+            line = line.split(None)
 
-            word_count += 1
-            words.append(line)
+            word_count += len(line)
+            words.extend(line)
 
     print(f"{word_count} words loaded successfully!")
     loaded = True
