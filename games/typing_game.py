@@ -44,9 +44,10 @@ class TypingGame(BaseGame):
 
         before_header = None
         while True:
-            procedures.print_procedures("Typing Game!!", "+", procedures_list,
-                                        before_header=before_header, after_header=RULES)
-            status_code, option = procedures.ask_and_execute_procedure(procedures_list)
+            status_code, option = procedures.print_ask_execute_procedures("Typing Game!!", "+",
+                                                                          procedures_list,
+                                                                          before_header=before_header,
+                                                                          after_header=RULES)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
                 continue
@@ -103,8 +104,9 @@ class TypingGame(BaseGame):
 
     def __judge(self, correct_input_list, user_input_list):
         if len(correct_input_list) < len(user_input_list):
-            return STATUS_UNDERPOPULATED, 0
+            return STATUS_UNDERPOPULATED, 0, []
 
+        judgement_table = []
         score = 0
         for i in range(len(correct_input_list)):
             correct_input = correct_input_list[i]
@@ -112,14 +114,15 @@ class TypingGame(BaseGame):
             letter_count = len(correct_input)
             if not letter_count in self.score_per_letter_count:
                 print_error(f"Score per {letter_count}-letter word is missing right now... How come?")
-                return STATUS_UNDERPOPULATED, 0
+                return STATUS_UNDERPOPULATED, 0, []
             given_score = self.score_per_letter_count[letter_count]
             if correct_input == user_input:
                 score += given_score
+            judgement_table = (correct_input, user_input, given_score if correct_input == user_input else 0)
 
         return STATUS_SUCCESS, score
 
-    def __do_countdown(self):
+    def __print_countdown(self):
         max_width = max(terminal.get_string_visual_width("The typing game starts in..."),
                         terminal.get_string_visual_width("3... 2... 1... GO!!!!"))
         width = terminal.get_width()
@@ -178,6 +181,14 @@ class TypingGame(BaseGame):
             print(word)
             print("> ", end="")
 
+    def __print_congrats(self, time_taken, score, judgement_table):
+        if terminal.use_advanced_terminal_graphics:
+            print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
+                  .bold().fgcol(terminal.COLOR_YELLOW))
+            print(terminal.ansify("Your score is {:d}. Nice!!".format(score))
+                  .bold().fgcol(terminal.COLOR_YELLOW))
+        pass
+
     def game(self):
         status_code = self.__validate_invariants()
 
@@ -191,7 +202,7 @@ class TypingGame(BaseGame):
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
-        self.__do_countdown()
+        self.__print_countdown()
 
         timestamp_start = time.time()
         user_typed_words = []
@@ -205,12 +216,9 @@ class TypingGame(BaseGame):
         terminal.reset_cursor_to_top_left()
 
         time_taken = time.time() - timestamp_start
-        status_code, score = self.__judge(words, user_typed_words)
+        status_code, score, judgement_table = self.__judge(words, user_typed_words)
         if status_code == STATUS_SUCCESS:
-            print(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
-                  .bold().fgcol(terminal.COLOR_YELLOW))
-            print(terminal.ansify("Your score is {:d}. Nice!!".format(score))
-                  .bold().fgcol(terminal.COLOR_YELLOW))
+            self.__print_congrats(time_taken, score, judgement_table)
         else:
             print_error(f"The score could not be calculated: {status_code}")
 

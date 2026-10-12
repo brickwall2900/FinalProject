@@ -9,9 +9,10 @@ INDEX_NAME          = 1
 INDEX_FUNCTION      = 2
 INDEX_ARGS_TUPLE    = 3
 
-def print_procedures(header, separator_char, procedures, before_header=None, after_header=None):
+def print_ask_execute_procedures(header, separator_char, procedures, prompt="Enter a choice: ",
+                                 before_header=None, after_header=None):
     if terminal.use_advanced_terminal_graphics:
-        terminal.erase_whole_screen()
+        # terminal.erase_whole_screen()
         header_width = terminal.get_string_visual_width(header)
         max_width = max(40, header_width)
         border = "=" * max_width
@@ -49,6 +50,22 @@ def print_procedures(header, separator_char, procedures, before_header=None, aft
 
         terminal.tgfx_print_text(border, pos_x, mpos_y + 2)
         terminal.put_cursor_to(pos_x, mpos_y + 1)
+
+        option = safeint(input(prompt))
+        if terminal.use_advanced_terminal_graphics:
+            terminal.tgfx_draw_rect(pos_x,
+                                    pos_y - before_header_lines - 1,
+                                    max_width,
+                                    1 + after_header_lines + max(1, len(procedures)) + 5 + before_header_lines,
+                                    char=" ",
+                                    inner_char=" ")  # clear rect
+            terminal.reset_cursor_to_top_left()
+
+        status_code = do_execute_procedure(procedures, option)
+
+        return status_code, option
+
+        # return pos_x, pos_y, max_width, mpos_y - pos_y - 2 + max(1, len(procedures))
     else:
         if header is not None:
             print(f"{separator_char * 5} {header} {separator_char * 5}")
@@ -59,10 +76,16 @@ def print_procedures(header, separator_char, procedures, before_header=None, aft
 
         if len(procedures) == 0:
             print("<none>")
-            return
+            return STATUS_SUCCESS, 0 # FIXME: what to do?
 
         for procedure in procedures:
             print(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}")
+
+        option = safeint(input(prompt))
+        print()
+        if terminal.use_advanced_terminal_graphics:
+            terminal.reset_cursor_to_top_left()
+        return do_execute_procedure(procedures, option), option
 
 # defines a procedure
 def defproc(option, name, func, *args):
@@ -91,11 +114,3 @@ def do_execute_procedure(procedures, choice):
         return STATUS_SUCCESS
     else:
         return STATUS_BAD_USER_INPUT
-
-# asks the user for an option in the menu then executes it
-def ask_and_execute_procedure(procedures, prompt="Enter a choice: "):
-    option = safeint(input(prompt))
-    print()
-    if terminal.use_advanced_terminal_graphics:
-        terminal.reset_cursor_to_top_left()
-    return do_execute_procedure(procedures, option), option

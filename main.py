@@ -45,9 +45,9 @@ def loop():
 
     before_header = None
     while True:
-        procedures.print_procedures(" ++ Game Selection ++ ", "..", procedure_list,
-                                    before_header=before_header)
-        status_code, option = procedures.ask_and_execute_procedure(procedure_list)
+        status_code, option = procedures.print_ask_execute_procedures(" ++ Game Selection ++ ",
+                                                                      "..", procedure_list,
+                                                                      before_header=before_header)
         if status_code != STATUS_SUCCESS:
             before_header = "Invalid option."
             continue
