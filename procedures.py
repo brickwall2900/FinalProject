@@ -1,3 +1,5 @@
+from logging import DEBUG
+
 import ansi
 import terminal
 from common import safeint
@@ -8,6 +10,8 @@ from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_BAD_USER_INPUT, 
 INDEX_OPTION        = 0
 INDEX_NAME          = 1
 INDEX_FUNCTION      = 2
+
+PDEBUG              = False
 
 def print_ask_execute_procedures(header,
                                  separator_char,
@@ -39,12 +43,13 @@ def print_ask_execute_procedures(header,
         pos_y = max(height / 2 - procedure_visual_height / 2, 1)
 
         show_more_option = pos_y + procedure_visual_height >= safe_height and len(procedures) >= procedure_limit
-        print(pos_y + procedure_visual_height >= safe_height)
-        print(pos_y + procedure_visual_height)
-        print(safe_height)
-        print(procedure_visual_height)
-        print(procedure_offset)
-        print(show_more_option)
+        if PDEBUG:
+            print(pos_y + procedure_visual_height >= safe_height)
+            print(pos_y + procedure_visual_height)
+            print(safe_height)
+            print(procedure_visual_height)
+            print(procedure_offset)
+            print(show_more_option)
 
         terminal.tgfx_print_text(border, pos_x, pos_y)
         terminal.tgfx_print_text(header, pos_x + (max_width / 2) - ((header_width + header_offset) / 2), pos_y + 1)
