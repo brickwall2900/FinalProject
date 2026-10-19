@@ -8,7 +8,6 @@ from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_BAD_USER_INPUT, 
 INDEX_OPTION        = 0
 INDEX_NAME          = 1
 INDEX_FUNCTION      = 2
-INDEX_ARGS_TUPLE    = 3
 
 def print_ask_execute_procedures(header,
                                  separator_char,
@@ -133,8 +132,8 @@ def print_ask_execute_procedures(header,
         return do_execute_procedure(procedures, option), option
 
 # defines a procedure
-def defproc(option, name, func, *args):
-    return [ option, name, func, args ]
+def defproc(option, name, func):
+    return [ option, name, func ]
 
 # finds a procedure corresponding to a given choice
 def find_procedure(procedures, choice):
@@ -153,7 +152,7 @@ def do_execute_procedure(procedures, choice):
 
         if procedure[INDEX_FUNCTION] is not None:
             # TODO: allowed by lab instructor? tuples not allowed...
-            procedure[INDEX_FUNCTION](*procedure[INDEX_ARGS_TUPLE])
+            procedure[INDEX_FUNCTION]()
 
         print()
         return STATUS_SUCCESS
