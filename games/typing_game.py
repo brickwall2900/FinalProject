@@ -1,5 +1,6 @@
 import os
 
+import ansi
 import terminal
 from common import print_error, shuffle
 from data import word_bank
@@ -136,12 +137,12 @@ class TypingGame(BaseGame):
 
         for i in range(4, 0, -1):
             if i == 1:
-                countdown += str(terminal.ansify("GO!!!!").bold()) \
+                countdown += str(ansi.bold("GO!!!!")) \
                     if terminal.use_advanced_terminal_graphics else "GO!!!!"
             elif (i - 1) < 4:
-                countdown += str(terminal.ansify(f"{i - 1}... ").bold().fgcol(terminal.COLOR_RED if i == 3 else
-                                                                              terminal.COLOR_YELLOW if i == 2 else
-                                                                              terminal.COLOR_GREEN)) \
+                countdown += str(ansi.fgcolor(ansi.bold(f"{i - 1}... "), terminal.COLOR_RED if i == 3 else
+                                                                         terminal.COLOR_YELLOW if i == 2 else
+                                                                         terminal.COLOR_GREEN)) \
                     if terminal.use_advanced_terminal_graphics else f"{i - 1}... "
             if terminal.use_advanced_terminal_graphics:
                 terminal.erase_whole_screen()
@@ -170,7 +171,7 @@ class TypingGame(BaseGame):
 
             terminal.tgfx_print_text("======================================", pos_x, pos_y - 1)
             terminal.tgfx_print_text("TYPE THE WORD BELOW THEN PRESS [Enter]", pos_x, pos_y)
-            print(terminal.ansify().bold().persist(), end="")
+            print(ansi.bold("", persist=True), end="")
             terminal.tgfx_print_text(word, pos_x, pos_y + 1)
             print(terminal.ESCAPE_RESET_GRAPHICS, end="")
             terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
@@ -187,23 +188,20 @@ class TypingGame(BaseGame):
             procedures.defproc(0, "Exit", None)
         ]
 
-        after_header = str(terminal.ansify("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken))
-              .bold().fgcol(terminal.COLOR_YELLOW))
+        after_header = str(ansi.fgcolor(ansi.bold("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken)),
+                                        terminal.COLOR_YELLOW))
         after_header += "\n\n"
-        after_header += str(terminal.ansify("Your score is {:d}. Nice!!".format(score))
-              .bold().fgcol(terminal.COLOR_YELLOW))
+        after_header += str(ansi.fgcolor(ansi.bold("Your score is {:d}. Nice!!".format(score)), terminal.COLOR_YELLOW))
 
         before_header = None
         while True:
-            status_code, option = procedures.print_ask_execute_procedures(str(terminal.ansify("CONGRATULATIONS!!")
-                                                                          .bold().fgcol(terminal.COLOR_YELLOW)),
+            status_code, option = procedures.print_ask_execute_procedures(str(ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)),
                                                                           "+",
                                                                           procedures_list,
                                                                           status_footer=before_header,
                                                                           after_header=after_header,
                                                                           header_offset=-len(str(
-                                                                              terminal.ansify()
-                                                                              .bold().fgcol(terminal.COLOR_YELLOW)))+2)
+                                                                              ansi.fgcolor(ansi.bold(""), terminal.COLOR_YELLOW)))+2)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
                 continue

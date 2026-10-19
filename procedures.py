@@ -1,3 +1,4 @@
+import ansi
 import terminal
 from common import safeint
 from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_BAD_USER_INPUT, STATUS_PREVIOUS, STATUS_NEXT
@@ -54,7 +55,7 @@ def print_ask_execute_procedures(header,
             terminal.tgfx_print_text(after_header, pos_x, pos_y + 3, max_width=max_width, word_wrap=True)
 
         if len(procedures) == 0:
-            print(terminal.ansify().bold().persist(), end="")
+            print(ansi.bold("", persist=True), end="")
             terminal.tgfx_print_text("<none>", pos_x, procedure_y + pos_y)
             print(terminal.ESCAPE_RESET_GRAPHICS, end="")
 
@@ -66,13 +67,13 @@ def print_ask_execute_procedures(header,
                 break
             procedures_shown += 1
             procedure = procedures[i + procedure_offset]
-            print(terminal.ansify().bold().persist(), end="")
+            print(ansi.bold("", persist=True), end="")
             terminal.tgfx_print_text(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}", pos_x, procedure_y + pos_y)
             print(terminal.ESCAPE_RESET_GRAPHICS, end="")
             procedure_y += 1
 
         if show_more_option:
-            print(terminal.ansify().bold().persist(), end="")
+            print(ansi.bold("", persist=True), end="")
             terminal.tgfx_print_text(f"[W] Next page...", pos_x,
                                      procedure_y + pos_y)
             terminal.tgfx_print_text(f"[Q] Prev page...", pos_x,
@@ -100,9 +101,9 @@ def print_ask_execute_procedures(header,
             terminal.reset_cursor_to_top_left()
 
         if option is None:
-            if raw_option.endswith("Q") and procedure_offset - procedures_shown >= 0: # left arrow
+            if raw_option.upper().endswith("Q") and procedure_offset - procedures_shown >= 0: # left arrow
                 return STATUS_PREVIOUS, procedures_shown
-            elif raw_option.endswith("W") and procedure_offset + procedures_shown < len(procedures): # right arrow
+            elif raw_option.upper().endswith("W") and procedure_offset + procedures_shown < len(procedures): # right arrow
                 return STATUS_NEXT, procedures_shown
 
         status_code = do_execute_procedure(procedures, option)

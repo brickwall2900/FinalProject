@@ -26,20 +26,20 @@ def init():
     for i in range(1, 100):
         procedure_list.append(procedures.defproc(i, f"spam{i}", None))
 
-    before_header = None
-    offset = 0
-    while True:
-        status_code, option = procedures.print_ask_execute_procedures(" ++ Game Selection ++ ",
-                                                                      "..", procedure_list,
-                                                                      status_footer=before_header,
-                                                                      procedure_offset=offset,
-                                                                      procedure_limit=5)
-        terminal.put_cursor_to(0, 20)
-        print(STATUS_CODE_TO_STRING_TABLE[status_code])
-        if status_code == STATUS_NEXT:
-            offset += option
-        elif status_code == STATUS_PREVIOUS:
-            offset -= option
+    # before_header = None
+    # offset = 0
+    # while True:
+    #     status_code, option = procedures.print_ask_execute_procedures(" ++ Game Selection ++ ",
+    #                                                                   "..", procedure_list,
+    #                                                                   status_footer=before_header,
+    #                                                                   procedure_offset=offset,
+    #                                                                   procedure_limit=5)
+    #     terminal.put_cursor_to(0, 20)
+    #     print(STATUS_CODE_TO_STRING_TABLE[status_code])
+    #     if status_code == STATUS_NEXT:
+    #         offset += option
+    #     elif status_code == STATUS_PREVIOUS:
+    #         offset -= option
 
 
     if not terminal.use_advanced_terminal_graphics:

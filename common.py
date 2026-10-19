@@ -1,4 +1,5 @@
 # Utility functions
+import ansi
 import terminal
 import random
 
@@ -33,7 +34,7 @@ def shuffle(the_list):
 
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
-    print(terminal.ansify(str(value)).fgcol(terminal.COLOR_RED).bold(), end=end)
+    print(ansi.fgcolor(ansi.bold(str(value)), terminal.COLOR_RED))
 
 def print_separator(c="*", count=20):
     print(c * count)
