@@ -11,6 +11,8 @@ STATUS_ALREADY_EXISTS               = 0x3
 STATUS_UNDERPOPULATED               = 0x4
 STATUS_OUT_OF_BOUNDS                = 0x5
 STATUS_BAD_USER_INPUT               = 0x6
+STATUS_NEXT                         = 0x7
+STATUS_PREVIOUS                     = 0x8
 
 STATUS_CODE_TO_STRING_TABLE = {
     STATUS_SUCCESS: "The operation was successful.",
@@ -20,6 +22,8 @@ STATUS_CODE_TO_STRING_TABLE = {
     STATUS_UNDERPOPULATED: "The operation expects a list to be populated by a certain size but did not meet that requirement.",
     STATUS_OUT_OF_BOUNDS: "The operation was accessing something that is out-of-bounds.",
     STATUS_BAD_USER_INPUT: "The operation required something from the user but the user gave malformed input.",
+    STATUS_NEXT: "The operation requests to go forward to something.",
+    STATUS_PREVIOUS: "The operation requests to go back to something.",
 }
 
 STATUS_CODE_TO_LITERAL_TABLE = {
@@ -30,4 +34,6 @@ STATUS_CODE_TO_LITERAL_TABLE = {
     STATUS_UNDERPOPULATED: "STATUS_UNDERPOPULATED",
     STATUS_OUT_OF_BOUNDS: "STATUS_OUT_OF_BOUNDS",
     STATUS_BAD_USER_INPUT: "STATUS_BAD_USER_INPUT",
+    STATUS_NEXT: "STATUS_NEXT",
+    STATUS_PREVIOUS: "STATUS_PREVIOUS"
 }

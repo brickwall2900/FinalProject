@@ -9,7 +9,7 @@ from games.base_game import BaseGame
 from games.typing_game import TypingGame
 
 import procedures
-from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS
+from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_NEXT, STATUS_PREVIOUS
 
 
 def init():
@@ -19,9 +19,31 @@ def init():
     # print(STATUS_CODE_TO_STRING_TABLE[status])
     # terminal.tgfx_print_text("the quick brown fox jumped over the lazy dog!", (width / 2) - 5 + 2, (height / 2), 6)
     # print(STATUS_CODE_TO_STRING_TABLE[status])
+
+    procedure_list = [
+        procedures.defproc(0, "Exit", None)
+    ]
+    for i in range(1, 100):
+        procedure_list.append(procedures.defproc(i, f"spam{i}", None))
+
+    before_header = None
+    offset = 0
+    while True:
+        status_code, option = procedures.print_ask_execute_procedures(" ++ Game Selection ++ ",
+                                                                      "..", procedure_list,
+                                                                      status_footer=before_header,
+                                                                      procedure_offset=offset,
+                                                                      procedure_limit=5)
+        terminal.put_cursor_to(0, 20)
+        print(STATUS_CODE_TO_STRING_TABLE[status_code])
+        if status_code == STATUS_NEXT:
+            offset += option
+        elif status_code == STATUS_PREVIOUS:
+            offset -= option
+
+
     if not terminal.use_advanced_terminal_graphics:
         print("Fancy terminal graphics are disabled!")
-    pass
 
 
 def game_procedure(game_class):
@@ -47,7 +69,7 @@ def loop():
     while True:
         status_code, option = procedures.print_ask_execute_procedures(" ++ Game Selection ++ ",
                                                                       "..", procedure_list,
-                                                                      before_header=before_header)
+                                                                      status_footer=before_header)
         if status_code != STATUS_SUCCESS:
             before_header = "Invalid option."
             continue

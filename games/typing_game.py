@@ -46,7 +46,7 @@ class TypingGame(BaseGame):
         while True:
             status_code, option = procedures.print_ask_execute_procedures("Typing Game!!", "+",
                                                                           procedures_list,
-                                                                          before_header=before_header,
+                                                                          status_footer=before_header,
                                                                           after_header=RULES)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
@@ -199,7 +199,7 @@ class TypingGame(BaseGame):
                                                                           .bold().fgcol(terminal.COLOR_YELLOW)),
                                                                           "+",
                                                                           procedures_list,
-                                                                          before_header=before_header,
+                                                                          status_footer=before_header,
                                                                           after_header=after_header,
                                                                           header_offset=-len(str(
                                                                               terminal.ansify()

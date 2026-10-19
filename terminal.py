@@ -1,7 +1,6 @@
-# TODO: does my lab instructor allow this?
+# TODO: does my lab instructor allow this? NOT ALLOWED; put into not objects and classes
 
 import os
-import math
 
 from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS
 
@@ -31,8 +30,6 @@ COLOR_MAGENTA           = 5
 COLOR_CYAN              = 6
 COLOR_WHITE             = 7
 COLOR_DEFAULT           = 9
-
-use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True"))
 
 class AnsiBuilder:
     __flags = 0
@@ -218,3 +215,7 @@ def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
         pos_y += 1
 
     return STATUS_SUCCESS
+
+
+use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True"))
+use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24
