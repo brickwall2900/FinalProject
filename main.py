@@ -5,10 +5,8 @@ import time
 import terminal
 from common import print_error
 
-from games.base_game import BaseGame
-from games.typing_game import TypingGame
-
 import procedures
+from games.typing_game import typing_game
 from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_NEXT, STATUS_PREVIOUS
 
 
@@ -46,22 +44,22 @@ def init():
         print("Fancy terminal graphics are disabled!")
 
 
-def game_procedure(game_class):
+def game_procedure(game_function):
     def the_procedure():
-        game = game_class()
+        game = game_function()
 
-        if game.init():
-            game.run()
+        if game["init"]():
+            game["run"]()
         else:
             print_error("The game could not be ran.")
 
-        game.destroy()
+        game["destroy"]()
 
     return the_procedure
 
 def loop():
     procedure_list = [
-        procedures.defproc(1, "Typing Game", game_procedure(TypingGame)),
+        procedures.defproc(1, "Typing Game", game_procedure(typing_game)),
         procedures.defproc(0, "Exit", None)
     ]
 

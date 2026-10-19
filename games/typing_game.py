@@ -4,7 +4,6 @@ import ansi
 import terminal
 from common import print_error, shuffle
 from data import word_bank
-from games.base_game import BaseGame
 
 import procedures
 
@@ -16,13 +15,13 @@ from status import STATUS_UNDERPOPULATED, STATUS_SUCCESS, STATUS_ALREADY_EXISTS,
 
 RULES = "The Typing Game tests your typing skills by you typing words with speed and accuracy!"
 
-class TypingGame(BaseGame):
+def typing_game():
     words_in_random = True
     letter_count_to_include = [3, 4, 5]
     word_count_per_letter_count = { 3: 7, 4: 7, 5: 7 }
     score_per_letter_count = { 3: 2, 4: 5, 5: 7 }
 
-    def init(self):
+    def init():
         error_code, word_count = word_bank.try_loading_words()
         success = (error_code == STATUS_SUCCESS
                    or error_code == STATUS_ALREADY_EXISTS)
@@ -34,10 +33,9 @@ class TypingGame(BaseGame):
 
         return success
 
-
-    def run(self):
+    def run():
         procedures_list = [
-            procedures.defproc(1, "Start", self.game),
+            procedures.defproc(1, "Start", game),
             procedures.defproc(2, "Leaderboards", None),
             procedures.defproc(3, "Settings", None),
             procedures.defproc(0, "Exit", None)
@@ -60,7 +58,7 @@ class TypingGame(BaseGame):
 
     # picks random words with a criteria, that `count`
     # words will be given with `letter_count` letters in it from the word bank.
-    def __pick_words(self, count, letter_count):
+    def __pick_words(count, letter_count):
         letter_count_words = [word for word in word_bank.words if len(word) == letter_count]
 
         if len(letter_count_words) < count:
@@ -70,11 +68,11 @@ class TypingGame(BaseGame):
 
         return STATUS_SUCCESS, letter_count_words[:count]
 
-    def __build_word_sequence(self):
+    def __build_word_sequence():
         result = []
 
-        for letter_count in self.letter_count_to_include:
-            status_code, words = self.__pick_words(self.word_count_per_letter_count[letter_count], letter_count)
+        for letter_count in letter_count_to_include:
+            status_code, words = __pick_words(word_count_per_letter_count[letter_count], letter_count)
             if status_code == STATUS_SUCCESS:
                 result.extend(words)
             else:
@@ -82,28 +80,28 @@ class TypingGame(BaseGame):
                 print_error(f"Insufficient words in word bank. Please provide more {letter_count}-letter words.")
                 return status_code, None
 
-        if self.words_in_random:
+        if words_in_random:
             shuffle(result)
 
         return STATUS_SUCCESS, result
 
-    def __validate_invariants(self):
-        if len(self.letter_count_to_include) <= 0:
+    def __validate_invariants():
+        if len(letter_count_to_include) <= 0:
             print_error("At least one n-letter count must be specified.")
             return STATUS_UNDERPOPULATED
 
-        for letter_count in self.letter_count_to_include:
-            if not letter_count in self.word_count_per_letter_count:
+        for letter_count in letter_count_to_include:
+            if not letter_count in word_count_per_letter_count:
                 print_error(f"The word count for {letter_count}-letter words is unspecified.")
                 return STATUS_UNDERPOPULATED
 
-            if not letter_count in self.score_per_letter_count:
+            if not letter_count in score_per_letter_count:
                 print_error(f"The score for {letter_count}-letter words is unspecified.")
                 return STATUS_UNDERPOPULATED
 
         return STATUS_SUCCESS
 
-    def __judge(self, correct_input_list, user_input_list):
+    def __judge(correct_input_list, user_input_list):
         if len(correct_input_list) < len(user_input_list):
             return STATUS_UNDERPOPULATED, 0, []
 
@@ -113,17 +111,17 @@ class TypingGame(BaseGame):
             correct_input = correct_input_list[i]
             user_input = user_input_list[i]
             letter_count = len(correct_input)
-            if not letter_count in self.score_per_letter_count:
+            if not letter_count in score_per_letter_count:
                 print_error(f"Score per {letter_count}-letter word is missing right now... How come?")
                 return STATUS_UNDERPOPULATED, 0, []
-            given_score = self.score_per_letter_count[letter_count]
+            given_score = score_per_letter_count[letter_count]
             if correct_input == user_input:
                 score += given_score
             judgement_table.append((correct_input, user_input, given_score if correct_input == user_input else 0))
 
         return STATUS_SUCCESS, score, judgement_table
 
-    def __print_countdown(self):
+    def __print_countdown():
         max_width = max(terminal.get_string_visual_width("The typing game starts in..."),
                         terminal.get_string_visual_width("3... 2... 1... GO!!!!"))
         width = terminal.get_width()
@@ -157,7 +155,7 @@ class TypingGame(BaseGame):
                 print(countdown)
             time.sleep(0.5)
 
-    def __print_word(self, word):
+    def __print_word(word):
         if terminal.use_advanced_terminal_graphics:
             terminal.erase_whole_screen()
             terminal.reset_cursor_to_top_left()
@@ -182,9 +180,9 @@ class TypingGame(BaseGame):
             print(word)
             print("> ", end="")
 
-    def __print_congrats(self, time_taken, score, judgement_table):
+    def __print_congrats(time_taken, score, judgement_table):
         procedures_list = [
-            procedures.defproc(1, "View Score Table", self.__view_score_table, time_taken, score, judgement_table),
+            procedures.defproc(1, "View Score Table", __view_score_table, time_taken, score, judgement_table),
             procedures.defproc(0, "Exit", None)
         ]
 
@@ -212,25 +210,25 @@ class TypingGame(BaseGame):
 
         pass
 
-    def game(self):
-        status_code = self.__validate_invariants()
+    def game():
+        status_code = __validate_invariants()
 
         if status_code != STATUS_SUCCESS:
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
-        status_code, words = self.__build_word_sequence()
+        status_code, words = __build_word_sequence()
 
         if status_code != STATUS_SUCCESS:
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
-        self.__print_countdown()
+        __print_countdown()
 
         timestamp_start = time.time()
         user_typed_words = []
         for word in words:
-            self.__print_word(word)
+            __print_word(word)
 
             user_input = input()
             user_typed_words.append(user_input)
@@ -239,12 +237,18 @@ class TypingGame(BaseGame):
         terminal.reset_cursor_to_top_left()
 
         time_taken = time.time() - timestamp_start
-        status_code, score, judgement_table = self.__judge(words, user_typed_words)
+        status_code, score, judgement_table = __judge(words, user_typed_words)
         if status_code == STATUS_SUCCESS:
-            self.__print_congrats(time_taken, score, judgement_table)
+            __print_congrats(time_taken, score, judgement_table)
         else:
             print_error(f"The score could not be calculated: {status_code}")
 
 
-    def destroy(self):
+    def destroy():
         pass
+
+    return {
+        "init": init,
+        "run": run,
+        "destroy": destroy
+    }
