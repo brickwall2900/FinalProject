@@ -182,7 +182,7 @@ def typing_game():
 
     def __print_congrats(time_taken, score, judgement_table):
         procedures_list = [
-            procedures.defproc(1, "View Score Table", __view_score_table, time_taken, score, judgement_table),
+            procedures.defproc(1, "View Score Table", lambda: __view_score_table(time_taken, score, judgement_table)),
             procedures.defproc(0, "Exit", None)
         ]
 
@@ -206,7 +206,7 @@ def typing_game():
 
             break
 
-    def __view_score_table(self, time_taken, score, judgement_table):
+    def __view_score_table(time_taken, score, judgement_table):
 
         pass
 
