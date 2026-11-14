@@ -20,9 +20,9 @@ def __ask_procedure_basic(header,
                           after_header,
                           status_footer,
                           procedure_offset,
-                          procedure_limit,
-                          text_effects):
-    procedure_count = len(procedures)
+                          procedure_limit):
+    has_procedures = procedures is not None
+    procedure_count = len(procedures) if has_procedures else 0
     procedure_offset = clamp(procedure_offset, 0, procedure_count)
     page_size = max(1, procedure_limit)
     
@@ -33,34 +33,37 @@ def __ask_procedure_basic(header,
         print(after_header)
         print()
 
-    if procedure_count == 0:
-        print("<none>")
-        return STATUS_SUCCESS, 0 # FIXME: what to do?
-
     # calculate page
-    visible_procedures = procedures[procedure_offset:procedure_offset + page_size]
+    visible_procedures = procedures[procedure_offset:procedure_offset + page_size] if has_procedures else []
     has_prev = procedure_offset > 0
     has_next = (procedure_offset + page_size) < procedure_count
     show_pagination = has_prev or has_next
 
-    for procedure in visible_procedures:
-        print(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}")
+    if has_procedures:
+        if procedure_count == 0:
+            print("<none>")
+            return STATUS_SUCCESS, 0 # FIXME: what to do?
 
-    if show_pagination:
-        print()
-    if has_next:
-        print("[W] Next page...")
-    if has_prev:
-        print("[Q] Prev page...")
+        for procedure in visible_procedures:
+            print(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}")
+
+        if show_pagination:
+            print()
+        if has_next:
+            print("[W] Next page...")
+        if has_prev:
+            print("[Q] Prev page...")
+    else:
+        print("Press [ENTER] to continue...")
 
     if status_footer is not None:
-            print(after_header)
+            print(status_footer)
             print()
 
-    raw_option = input(prompt)
+    raw_option = input(prompt if has_procedures else "")
     option = safeint(raw_option)
 
-    if option is None:
+    if option is None and has_procedures:
         if raw_option.upper().endswith("Q") and has_prev: # left arrow
             return STATUS_PREVIOUS, page_size
         elif raw_option.upper().endswith("W") and has_next: # right arrow
@@ -76,8 +79,7 @@ def __ask_procedure_fancy(header,
                           after_header,
                           status_footer,
                           procedure_offset,
-                          procedure_limit,
-                          text_effects):
+                          procedure_limit):
     terminal.erase_whole_screen()
     header_width = len(ansi.get_raw_string(header))
     max_width = max(40, header_width)
@@ -86,7 +88,8 @@ def __ask_procedure_fancy(header,
     width = terminal.get_width()
     height = terminal.get_height()
 
-    procedure_count = len(procedures)
+    has_procedures = procedures is not None
+    procedure_count = len(procedures) if has_procedures else 0
     procedure_offset = clamp(procedure_offset, 0, procedure_count)
 
     # i swear to the almighty being that i wrote this on hand 
@@ -99,9 +102,8 @@ def __ask_procedure_fancy(header,
     # 3 for pagination options (next, prev, empty space)
     available_for_items = max(1, safe_height - 6 - after_header_line_count - footer_border_lines - 3)
     page_size = max(1, min(procedure_limit, available_for_items))
-    page_size = max(1, procedure_limit)
 
-    visible_procedures = procedures[procedure_offset:procedure_offset + page_size]
+    visible_procedures = procedures[procedure_offset:procedure_offset + page_size] if has_procedures else []
     has_prev = procedure_offset > 0
     has_next = (procedure_offset + page_size) < procedure_count
     show_pagination = has_prev or has_next
@@ -126,33 +128,39 @@ def __ask_procedure_fancy(header,
     print()
     procedure_y += 1
 
-    if procedure_count == 0:
-        print(ansi.bold("", persist=True), end="")
-        terminal.tgfx_print_text("<none>", pos_x, procedure_y)
-        procedure_y += 1
-        print(terminal.ESCAPE_RESET_GRAPHICS, end="")
-
-    for procedure in visible_procedures:
-        print(ansi.bold("", persist=True), end="")
-        terminal.tgfx_print_text(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}", pos_x, procedure_y)
-        print(terminal.ESCAPE_RESET_GRAPHICS, end="")
-        procedure_y += 1
-
-    if show_pagination:
-        print(ansi.bold("", persist=True), end="")
-        procedure_y += 1
-        if has_next:
-            terminal.tgfx_print_text(f"[W] Next page...", pos_x,
-                                        procedure_y)
+    if has_procedures:
+        if procedure_count == 0:
+            print(ansi.bold("", persist=True), end="")
+            terminal.tgfx_print_text("<none>", pos_x, procedure_y)
             procedure_y += 1
-        if has_prev:
-            terminal.tgfx_print_text(f"[Q] Prev page...", pos_x,
-                                        procedure_y)
-            procedure_y += 1
-        print(terminal.ESCAPE_RESET_GRAPHICS, end="")
+            print(terminal.ESCAPE_RESET_GRAPHICS, end="")
 
-    print()
-    procedure_y += 1
+        for procedure in visible_procedures:
+            print(ansi.bold("", persist=True), end="")
+            terminal.tgfx_print_text(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}", pos_x, procedure_y)
+            print(terminal.ESCAPE_RESET_GRAPHICS, end="")
+            procedure_y += 1
+
+        if show_pagination:
+            print(ansi.bold("", persist=True), end="")
+            procedure_y += 1
+            if has_next:
+                terminal.tgfx_print_text(f"[W] Next page...", pos_x,
+                                            procedure_y)
+                procedure_y += 1
+            if has_prev:
+                terminal.tgfx_print_text(f"[Q] Prev page...", pos_x,
+                                            procedure_y)
+                procedure_y += 1
+            print(terminal.ESCAPE_RESET_GRAPHICS, end="")
+    else:
+        terminal.tgfx_print_text(f"Press [ENTER] to continue...", pos_x,
+                                                    procedure_y)
+        procedure_y += 1
+
+    if has_procedures:
+        print()
+        procedure_y += 1
 
     if status_footer is not None:
         terminal.tgfx_print_text(status_footer, pos_x, procedure_y, max_width=max_width,
@@ -162,7 +170,7 @@ def __ask_procedure_fancy(header,
     terminal.tgfx_print_text(border, pos_x, procedure_y + 1)
     terminal.put_cursor_to(pos_x, procedure_y)
 
-    raw_option = input(prompt)
+    raw_option = input(prompt if has_procedures else "")
     option = safeint(raw_option)
     terminal.tgfx_draw_rect(pos_x,
                             pos_y,
@@ -171,7 +179,7 @@ def __ask_procedure_fancy(header,
                             char=" ",
                             inner_char=" ")  # clear rect
 
-    if option is None:
+    if option is None and has_procedures:
         if raw_option.upper().endswith("Q") and has_prev: # left arrow
             return STATUS_PREVIOUS, page_size
         elif raw_option.upper().endswith("W") and has_next: # right arrow
@@ -188,12 +196,11 @@ def ask_procedure(header,
                   status_footer=None,
                   after_header=None,
                   procedure_offset=0,
-                  procedure_limit=10,
-                  text_effects=0):
+                  procedure_limit=10):
     if terminal.use_advanced_terminal_graphics:
-        return __ask_procedure_fancy(header, separator_char, procedures, prompt, after_header, status_footer, procedure_offset, procedure_limit, text_effects)
+        return __ask_procedure_fancy(header, separator_char, procedures, prompt, after_header, status_footer, procedure_offset, procedure_limit)
     else:
-        return __ask_procedure_basic(header, separator_char, procedures, prompt, after_header, status_footer, procedure_offset, procedure_limit, text_effects)
+        return __ask_procedure_basic(header, separator_char, procedures, prompt, after_header, status_footer, procedure_offset, procedure_limit)
 
 # defines a procedure
 def defproc(option, name, func):
