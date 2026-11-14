@@ -2,6 +2,7 @@
 
 - [ ] base game
     - [x] typing game
+    - [ ] tutorial
     - [ ] leaderboard
     - [ ] save/load
 - [ ] profiles
