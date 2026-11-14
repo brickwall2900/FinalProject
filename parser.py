@@ -32,7 +32,7 @@ def serialize(data):
         return STATUS_BAD_USER_INPUT, None
 
     serialized = ""
-    for key, value in enumerate(data):
-        serialized = f"{key}={value}\n"
+    for key in data.keys():
+        serialized = serialized + f"{key}={data[key]}\n"
 
     return STATUS_SUCCESS, serialized
