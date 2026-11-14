@@ -2,7 +2,7 @@ import os
 
 import ansi
 import terminal
-from common import print_error, shuffle
+from common import print_error, shuffle, str_to_bool, safeint
 from data import word_bank
 import persistence
 
@@ -24,6 +24,7 @@ def typing_game():
     score_per_letter_count = { 3: 2, 4: 5, 5: 7 }
 
     def init():
+        nonlocal words_in_random, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
         error_code, word_count = word_bank.try_loading_words()
         success = (error_code == STATUS_SUCCESS
                    or error_code == STATUS_ALREADY_EXISTS)
@@ -46,7 +47,24 @@ def typing_game():
                 settings[f"ScorePerLetterCount_{letter_count}"] = str(score_per_letter_count[letter_count])
 
             persistence.save_persistence("typing_game", settings)
-        
+        elif error_code == STATUS_SUCCESS and settings is not None:
+            if "WordsInRandom" in settings:
+                words_in_random = str_to_bool(settings["WordsInRandom"])
+
+            if "LetterCountToInclude" in settings:
+                letter_count_to_include = [x for x in [safeint(x) for x in str(settings["LetterCountToInclude"]).split(",")] if x is not None]
+
+            for letter_count in letter_count_to_include:
+                if f"WordCountPerLetterCount_{letter_count}" in settings:
+                    value = safeint(settings[f"WordCountPerLetterCount_{letter_count}"])
+                    if value is not None:
+                        word_count_per_letter_count[letter_count] = value
+                if f"ScorePerLetterCount_{letter_count}" in settings:
+                    value = safeint(settings[f"ScorePerLetterCount_{letter_count}"])
+                    if value is not None:
+                        score_per_letter_count[letter_count] = value
+        else:
+            print_error("Settings file corrupt. Using default options instead.")
 
         return success
 
