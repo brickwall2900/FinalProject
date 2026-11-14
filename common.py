@@ -39,7 +39,11 @@ def clamp(given, n_min, n_max):
 
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
-    dialog.alert(ansi.bold(ansi.fgcolor(str(value), terminal.COLOR_RED)), ansi.bgcolor(ansi.fgcolor(ansi.bold("Error"), terminal.COLOR_WHITE), terminal.COLOR_RED))
+    option = dialog.alert(ansi.bold(ansi.fgcolor(str(value), terminal.COLOR_RED)), 
+                 ansi.bgcolor(ansi.fgcolor(ansi.bold("Error"), terminal.COLOR_WHITE), terminal.COLOR_RED),
+                 ["OK", "Commit Suicide"], "OK")
+    if option == "Commit Suicide":
+        raise SystemError()
 
 def print_separator(c="*", count=20):
     print(c * count)
