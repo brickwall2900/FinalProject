@@ -35,4 +35,4 @@ def serialize(data):
     for key, value in enumerate(data):
         serialized = f"{key}={value}\n"
 
-    return serialized
+    return STATUS_SUCCESS, serialized
