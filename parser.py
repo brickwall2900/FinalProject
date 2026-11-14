@@ -1,25 +1,38 @@
-# we cant use 3rd party libs so we have to create our own json parser and shi
+# simple fucking property-like parser
+# key=value
 
 # on everything i finish this project on time lol
 
 from status import *
 
-# Returns a python object from the specified JSON string
-def parse(input, offset=0):
+# input (str) -> dict[key]: value
+def deserialize(input):
     if input is None:
         return STATUS_NULL_POINTER, None
 
-def _peek(input, offset):
-    if 
-    
+    # TODO: autocompletion, remove!
+    input = str(input)
+    parsed = {}
 
-# Parses a JSON object to a Python dictionary
-def _parse_object(input, offset=0):
+    for line in input.splitlines():
+        equals_index = line.find("=")
+        if equals_index == -1:
+            return STATUS_BAD_USER_INPUT, None
 
+        key = line[:equals_index - 1]
+        value = line[equals_index:]
+        parsed[key] = value
 
-# testing...
-def main():
-    pass
+    return STATUS_SUCCESS, parsed
 
-if __name__ == "__main__":
-    main()
+# input (dict[key]: value) -> str
+def serialize(data):
+    # isinstance checks if the instance of `data` is of a given class
+    if not isinstance(data, dict): # checks if data is a dict
+        return STATUS_BAD_USER_INPUT, None
+
+    serialized = ""
+    for key, value in enumerate(data):
+        serialized = f"{key}={value}\n"
+
+    return serialized
