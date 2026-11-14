@@ -11,6 +11,8 @@ INDEX_OPTION        = 0
 INDEX_NAME          = 1
 INDEX_FUNCTION      = 2
 
+# dispatch mechanism ;-;
+
 PDEBUG              = False
 
 def print_ask_execute_procedures(header,
@@ -33,6 +35,7 @@ def print_ask_execute_procedures(header,
 
         procedure_offset = max(0, min(len(procedures), procedure_offset))
 
+        # i swear to the almighty being that i wrote this on hand 
         safe_height = height - 10
         _, after_header_lines = terminal.get_wrap_lines(after_header or "", max_width=max_width, word_wrap=True)
         _, status_footer_lines = terminal.get_wrap_lines(status_footer or "", max_width=max_width, word_wrap=True)
@@ -156,7 +159,6 @@ def do_execute_procedure(procedures, choice):
             return STATUS_OUT_OF_BOUNDS
 
         if procedure[INDEX_FUNCTION] is not None:
-            # TODO: allowed by lab instructor? tuples not allowed...
             procedure[INDEX_FUNCTION]()
 
         print()

@@ -13,6 +13,7 @@ STATUS_OUT_OF_BOUNDS                = 0x5
 STATUS_BAD_USER_INPUT               = 0x6
 STATUS_NEXT                         = 0x7
 STATUS_PREVIOUS                     = 0x8
+STATUS_NULL_POINTER                 = 0x9
 
 STATUS_CODE_TO_STRING_TABLE = {
     STATUS_SUCCESS: "The operation was successful.",
@@ -24,6 +25,7 @@ STATUS_CODE_TO_STRING_TABLE = {
     STATUS_BAD_USER_INPUT: "The operation required something from the user but the user gave malformed input.",
     STATUS_NEXT: "The operation requests to go forward to something.",
     STATUS_PREVIOUS: "The operation requests to go back to something.",
+    STATUS_NULL_POINTER: "The operation expects an object to be present but is given None.",
 }
 
 STATUS_CODE_TO_LITERAL_TABLE = {
@@ -35,5 +37,6 @@ STATUS_CODE_TO_LITERAL_TABLE = {
     STATUS_OUT_OF_BOUNDS: "STATUS_OUT_OF_BOUNDS",
     STATUS_BAD_USER_INPUT: "STATUS_BAD_USER_INPUT",
     STATUS_NEXT: "STATUS_NEXT",
-    STATUS_PREVIOUS: "STATUS_PREVIOUS"
+    STATUS_PREVIOUS: "STATUS_PREVIOUS",
+    STATUS_NULL_POINTER: "STATUS_NULL_POINTER",
 }

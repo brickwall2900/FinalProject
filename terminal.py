@@ -1,5 +1,3 @@
-# TODO: does my lab instructor allow this? NOT ALLOWED; put into not objects and classes
-
 import os
 
 from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS

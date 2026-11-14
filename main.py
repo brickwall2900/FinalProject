@@ -46,7 +46,7 @@ def init():
 
 def game_procedure(game_function):
     def the_procedure():
-        game = game_function()
+        game = game_function() # creates an instance of the game
 
         if game["init"]():
             game["run"]()
