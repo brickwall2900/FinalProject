@@ -3,6 +3,7 @@ import ansi
 import terminal
 import random
 
+import dialog
 from status import STATUS_INDEX_OUT_OF_BOUNDS, STATUS_SUCCESS
 
 # safeint() functions equivalently like int(), but returns `None` on invalid input.
@@ -32,9 +33,13 @@ def shuffle(the_list):
         new_index = random.randint(0, size)
         swap(the_list, i, new_index)
 
+# Forces a number to be within in range of [min, max].
+def clamp(given, n_min, n_max):
+    return max(min(given, n_max), n_min)
+
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
-    print(ansi.fgcolor(ansi.bold(str(value)), terminal.COLOR_RED))
+    dialog.alert(ansi.bold(ansi.fgcolor(str(value), terminal.COLOR_RED)), ansi.bgcolor(ansi.fgcolor(ansi.bold("Error"), terminal.COLOR_WHITE), terminal.COLOR_RED))
 
 def print_separator(c="*", count=20):
     print(c * count)
