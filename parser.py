@@ -19,8 +19,8 @@ def deserialize(input):
         if equals_index == -1:
             return STATUS_BAD_USER_INPUT, None
 
-        key = line[:equals_index - 1]
-        value = line[equals_index:]
+        key = line[:equals_index]
+        value = line[equals_index+1:]
         parsed[key] = value
 
     return STATUS_SUCCESS, parsed
