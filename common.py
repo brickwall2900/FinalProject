@@ -37,6 +37,16 @@ def shuffle(the_list):
 def clamp(given, n_min, n_max):
     return max(min(given, n_max), n_min)
 
+# Converts a string to a boolean
+def str_to_bool(given):
+    if given is None:
+        return False
+
+    if not isinstance(given, str):
+        return False
+
+    return given.strip().lower() == "true"
+
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
     option = dialog.alert(ansi.bold(ansi.fgcolor(str(value), terminal.COLOR_RED)), 

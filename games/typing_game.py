@@ -4,6 +4,7 @@ import ansi
 import terminal
 from common import print_error, shuffle
 from data import word_bank
+import persistence
 
 import procedures
 import dialog
@@ -31,6 +32,18 @@ def typing_game():
             if error_code == STATUS_FILE_NOT_FOUND:
                 print_error("Word bank not found. "
                             f"Please verify directory structure and that the word bank file exists.")
+
+        # load settings
+        error_code, settings = persistence.load_persistence("typing_game")
+        if error_code == STATUS_FILE_NOT_FOUND:
+            settings = {
+                "WordsInRandom": "false",
+                "LetterCountToInclude": "3,4,5",
+                "WordCountPerLetterCount_3": "7",
+                "ScorePerLetterCount": "3:2,4:5,5:7"
+            }
+            persistence.save_persistence("typing_game", settings)
+        
 
         return success
 
@@ -202,10 +215,10 @@ def typing_game():
         before_header = None
         while True:
             _, option = procedures.ask_procedure(str(ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)),
-                                                                          "+",
-                                                                          procedures_list,
-                                                                          status_footer=before_header,
-                                                                          after_header=after_header)
+                                                 "+",
+                                                 procedures_list,
+                                                 status_footer=before_header,
+                                                 after_header=after_header)
             status_code = procedures.do_execute_procedure(procedures_list, option)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
