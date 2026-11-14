@@ -32,16 +32,19 @@ def typing_game():
             if error_code == STATUS_FILE_NOT_FOUND:
                 print_error("Word bank not found. "
                             f"Please verify directory structure and that the word bank file exists.")
+                return False
 
         # load settings
         error_code, settings = persistence.load_persistence("typing_game")
         if error_code == STATUS_FILE_NOT_FOUND:
             settings = {
-                "WordsInRandom": "false",
-                "LetterCountToInclude": "3,4,5",
-                "WordCountPerLetterCount_3": "7",
-                "ScorePerLetterCount": "3:2,4:5,5:7"
+                "WordsInRandom": str(words_in_random),
+                "LetterCountToInclude": ",".join([str(x) for x in letter_count_to_include]), # yeah i know what this shit does now
             }
+            for letter_count in letter_count_to_include:
+                settings[f"WordCountPerLetterCount_{letter_count}"] = str(word_count_per_letter_count[letter_count])
+                settings[f"ScorePerLetterCount_{letter_count}"] = str(score_per_letter_count[letter_count])
+
             persistence.save_persistence("typing_game", settings)
         
 
