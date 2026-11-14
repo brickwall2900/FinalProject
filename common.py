@@ -3,6 +3,8 @@ import ansi
 import terminal
 import random
 
+import os
+
 import dialog
 from status import STATUS_INDEX_OUT_OF_BOUNDS, STATUS_SUCCESS
 
@@ -47,11 +49,13 @@ def str_to_bool(given):
 
     return given.strip().lower() == "true"
 
+SUICIDAL = str_to_bool(os.environ.get("SUICIDAL", "False"))
+
 # Prints an error on the screen with a distinct text color of red.
 def print_error(value, end="\n"):
     option = dialog.alert(ansi.bold(ansi.fgcolor(str(value), terminal.COLOR_RED)), 
                  ansi.bgcolor(ansi.fgcolor(ansi.bold("Error"), terminal.COLOR_WHITE), terminal.COLOR_RED),
-                 ["OK", "Commit Suicide"], "OK")
+                 ["OK", "Commit Suicide"] if SUICIDAL else ["OK"], "OK")
     if option == "Commit Suicide":
         raise SystemError()
 
