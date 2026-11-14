@@ -1,4 +1,5 @@
 ignored/
+persistence/
 __pycache__
 uv.lock
 .idea/misc.xml
