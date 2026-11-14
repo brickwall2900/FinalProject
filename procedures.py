@@ -95,9 +95,9 @@ def __ask_procedure_fancy(header,
     _, status_footer_line_count = terminal.get_wrap_lines(status_footer or "", max_width=max_width, word_wrap=True)
     footer_border_lines = (1 + status_footer_line_count) if status_footer is not None else 0
 
-    # 5 because top border + separator + prompt + bottom border + empty spaces
+    # 6 because top border + separator + prompt + bottom border + empty spaces
     # 3 for pagination options (next, prev, empty space)
-    available_for_items = max(1, safe_height - 5 - after_header_line_count - footer_border_lines - 3)
+    available_for_items = max(1, safe_height - 6 - after_header_line_count - footer_border_lines - 3)
     page_size = max(1, min(procedure_limit, available_for_items))
     page_size = max(1, procedure_limit)
 
@@ -107,7 +107,7 @@ def __ask_procedure_fancy(header,
     show_pagination = has_prev or has_next
 
     list_lines = max(1, len(visible_procedures)) + (3 if show_pagination else 0)
-    box_height = 5 + after_header_line_count + list_lines + footer_border_lines
+    box_height = 6 + after_header_line_count + list_lines + footer_border_lines
     
     pos_x = width / 2 - max_width / 2
     pos_y = max(height / 2 - box_height / 2, 1)
@@ -122,6 +122,9 @@ def __ask_procedure_fancy(header,
         terminal.tgfx_print_text(after_header, pos_x, pos_y + 3, max_width=max_width, word_wrap=True)
 
     procedure_y += after_header_line_count
+
+    print()
+    procedure_y += 1
 
     if procedure_count == 0:
         print(ansi.bold("", persist=True), end="")
