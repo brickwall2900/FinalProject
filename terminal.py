@@ -81,21 +81,31 @@ def get_wrap_lines(text, max_width=None, word_wrap=False):
     if max_width < 0:
         return STATUS_OUT_OF_BOUNDS, -1
 
-    lines = 1
-    str_pos = 0
-    str_len = len(text)
-    word_wrapped = False
-    while str_pos < str_len:
-        current_width = min(max_width, str_len)
-        if word_wrap:
-            word_wrapped = True
-            while current_width + str_pos < str_len and not text[current_width + str_pos].isspace():
-                current_width -= 1
-        str_pos += current_width
-        if word_wrapped:
-            str_pos += 1
-            word_wrapped = False
-        lines += 1
+    lines = 0
+    for paragraph in text.splitlines():
+        if max_width is None:
+            lines = 1
+        elif word_wrap:
+            import ansi
+            tokens = ansi.to_ansi_tokens(paragraph)
+
+            for token in tokens:
+                if not ansi.is_ansi_token(token):
+                    str_pos = 0
+                    while str_pos < len(token):
+                        if len(token) - str_pos <= max_width:
+                            lines += 1
+                            break
+        
+                        space_idx = token.rfind(" ", str_pos, str_pos + max_width + 1)
+                        if space_idx > str_pos:
+                            lines += 1
+                            str_pos = space_idx + 1
+                        else: # case where one word exceeds max_width, just split it
+                            lines += 1
+                            str_pos += max_width
+        else:
+            lines = len([paragraph[i:i + max_width] for i in range(0, len(paragraph), max_width)]) or 1
 
     return STATUS_SUCCESS, lines
 
@@ -125,25 +135,48 @@ def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
 
     pos_x = x
     pos_y = y
-    str_pos = 0
-    str_len = len(text)
-    word_wrapped = False
-    while str_pos < str_len:
-        put_cursor_to(pos_x, pos_y)
-        current_width = min(max_width, str_len)
-        if word_wrap:
-            word_wrapped = True
-            while current_width+str_pos < str_len and not text[current_width+str_pos].isspace():
-                current_width -= 1
-        print(text[str_pos:current_width+str_pos], end="")
-        str_pos += current_width
-        if word_wrapped:
-            str_pos += 1
-            word_wrapped = False
-        pos_y += 1
+    
+    for paragraph in text.splitlines():
+        if max_width is None:
+            lines = [paragraph]
+        elif word_wrap:
+            import ansi
+            lines = []
+            tokens = ansi.to_ansi_tokens(paragraph)
+            line_buffer = ""
+
+            for token in tokens:
+                if ansi.is_ansi_token(token):
+                    line_buffer += token
+                else:
+                    str_pos = 0
+                    while str_pos < len(token):
+                        if len(token) - str_pos <= max_width:
+                            lines.append(line_buffer + token[str_pos:])
+                            line_buffer = ""
+                            break
+        
+                        space_idx = token.rfind(" ", str_pos, str_pos + max_width + 1)
+                        if space_idx > str_pos:
+                            lines.append(line_buffer + token[str_pos:space_idx])
+                            str_pos = space_idx + 1
+                        else: # case where one word exceeds max_width, just split it
+                            lines.append(line_buffer + token[str_pos:str_pos + max_width])
+                            str_pos += max_width
+                        line_buffer = ""
+
+            if len(line_buffer) > 0:
+                lines[-1] = lines[-1] + line_buffer
+        else:
+            lines = [paragraph[i:i + max_width] for i in range(0, len(paragraph), max_width)] or [""]
+
+        for line in lines:
+            put_cursor_to(pos_x, pos_y)
+            print(line, end="")
+            pos_y += 1
 
     return STATUS_SUCCESS
 
 
-use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True"))
-use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24
+use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True")) and True
+# use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24
