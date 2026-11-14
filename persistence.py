@@ -18,7 +18,7 @@ def ensure_persistence_dir_exists():
 def load_persistence(name):
     has_persistence_dir = ensure_persistence_dir_exists()
     if not has_persistence_dir:
-        return STATUS_FILE_NOT_FOUND, None
+        return STATUS_ALREADY_EXISTS, None
 
     path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
 
@@ -32,7 +32,7 @@ def load_persistence(name):
 def save_persistence(name, data):
     has_persistence_dir = ensure_persistence_dir_exists()
     if not has_persistence_dir:
-        return STATUS_FILE_NOT_FOUND, None
+        return STATUS_ALREADY_EXISTS, None
 
     path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
 
