@@ -6,6 +6,7 @@ from common import print_error, shuffle
 from data import word_bank
 
 import procedures
+import dialog
 
 import time
 import random
@@ -38,15 +39,17 @@ def typing_game():
             procedures.defproc(1, "Start", game),
             procedures.defproc(2, "Leaderboards", None),
             procedures.defproc(3, "Settings", None),
+            procedures.defproc(4, "About", __view_about),
             procedures.defproc(0, "Exit", None)
         ]
 
         before_header = None
         while True:
-            status_code, option = procedures.print_ask_execute_procedures("Typing Game!!", "+",
+            _, option = procedures.ask_procedure("Typing Game!!", "+",
                                                                           procedures_list,
                                                                           status_footer=before_header,
                                                                           after_header=RULES)
+            status_code = procedures.do_execute_procedure(procedures_list, option)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
                 continue
@@ -55,6 +58,11 @@ def typing_game():
 
             if option == 0:  # exit option
                 break
+
+    def __view_about():
+        dialog.alert("The Typing Game tests how fast you can type words correctly!!" \
+        "Type more words correctly, the more points you get. Better if you can type" \
+        " words with speed and accuracy!", "About")
 
     # picks random words with a criteria, that `count`
     # words will be given with `letter_count` letters in it from the word bank.
@@ -73,7 +81,7 @@ def typing_game():
 
         for letter_count in letter_count_to_include:
             status_code, words = __pick_words(word_count_per_letter_count[letter_count], letter_count)
-            if status_code == STATUS_SUCCESS:
+            if status_code == STATUS_SUCCESS and words is not None:
                 result.extend(words)
             else:
                 assert status_code == STATUS_UNDERPOPULATED
@@ -193,13 +201,12 @@ def typing_game():
 
         before_header = None
         while True:
-            status_code, option = procedures.print_ask_execute_procedures(str(ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)),
+            _, option = procedures.ask_procedure(str(ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)),
                                                                           "+",
                                                                           procedures_list,
                                                                           status_footer=before_header,
-                                                                          after_header=after_header,
-                                                                          header_offset=-len(str(
-                                                                              ansi.fgcolor(ansi.bold(""), terminal.COLOR_YELLOW)))+2)
+                                                                          after_header=after_header)
+            status_code = procedures.do_execute_procedure(procedures_list, option)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
                 continue
@@ -219,7 +226,7 @@ def typing_game():
 
         status_code, words = __build_word_sequence()
 
-        if status_code != STATUS_SUCCESS:
+        if status_code != STATUS_SUCCESS or words is None:
             print_error(f"The game could not be started: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
             return
 
