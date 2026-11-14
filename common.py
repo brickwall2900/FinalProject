@@ -27,6 +27,17 @@ def swap(the_list, a, b):
 
     return STATUS_SUCCESS
 
+# Sorts a given list using a given comparator function
+# selection sort, please change to something more "performative"
+# selection sort is the most simplest thing i've thought of and i have no sleep
+def sort(the_list, comparator):
+    for i in range(len(the_list)):
+        min = i
+        for j in range(i + 1, len(the_list)):
+            if comparator(the_list[min], the_list[j]) > 0: # this > that
+                min = j
+        swap(the_list, i, min)
+
 # Shuffles a list in-place
 # i implemented my own for aura points
 def shuffle(the_list):
