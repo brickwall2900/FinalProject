@@ -177,6 +177,16 @@ def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
 
     return STATUS_SUCCESS
 
+# Converts a string to a boolean
+# put here cuz importing common would cause a circular dependency
+def str_to_bool(given):
+    if given is None:
+        return False
 
-use_advanced_terminal_graphics = bool(os.environ.get("ADV_TERM_GFX", "True")) and True
+    if not isinstance(given, str):
+        return False
+
+    return given.strip().lower() == "true"
+
+use_advanced_terminal_graphics = str_to_bool(os.environ.get("ADV_TERM_GFX", "True")) and True
 # use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24
