@@ -119,206 +119,6 @@ def typing_game():
         dialog.alert("TLDR; Type correct words = more points\n \n" \
         "hello\n \n> henlo\n \n!! INCORRECT !! you get 0 points...", "About")
 
-    def __settings():
-        nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
-
-        def __opt_words_shuffled_randomly():
-            nonlocal words_in_random
-
-            procedures_list = [
-                procedures.defproc(1, "Toggle", None),
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
-
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Words shuffled randomly", "?",
-                                                        procedures_list,
-                                                        after_header=description)
-                if status_code == STATUS_SUCCESS:
-                    if option == 0:
-                        break
-                    elif option == 1:
-                        words_in_random = not words_in_random
-
-                description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
-
-        def __opt_show_words_in_advance():
-            nonlocal show_words_in_advance
-
-            procedures_list = [
-                procedures.defproc(1, "Toggle", None),
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
-
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Show words in advance", "?",
-                                                        procedures_list,
-                                                        after_header=description)
-                if status_code == STATUS_SUCCESS:
-                    if option == 0:
-                        break
-                    elif option == 1:
-                        show_words_in_advance = not show_words_in_advance
-
-                description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
-
-        def __opt_letter_counts():
-            nonlocal letter_count_to_include
-
-            procedures_list = [
-                procedures.defproc(1, "Add", None),
-                procedures.defproc(2, "Remove", None),
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
-
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Letter counts", "?",
-                                                        procedures_list,
-                                                        after_header=description)
-                if status_code == STATUS_SUCCESS:
-                    if option == 0:
-                        break
-                    elif option == 1:
-                        count = dialog.input("How many letters?", "Letter counts")
-                        count = safeint(count)
-                        if count is not None and find(letter_count_to_include, count) is None:
-                            letter_count_to_include.append(count)
-                        else:
-                            print_error("Letter count is invalid or already included.")
-                    elif option == 2:
-                        count = dialog.input(f"Specify letter count to remove? ({letter_count_to_include})", "Letter counts")
-                        count = safeint(count)
-                        if count is not None and find(letter_count_to_include, count) is not None:
-                            letter_count_to_include.remove(count)
-                        else:
-                            print_error("Letter count is invalid or not in the list.")
-
-                description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
-
-        def __opt_score_per_letter_count():
-            nonlocal score_per_letter_count
-
-            def __edit_word_count(letter_count):
-                def proc():
-                    nonlocal score_per_letter_count
-                    new_value = dialog.input(f"Choose how much score given for {letter_count}-letter words if typed correctly.\n \nCurrent: {score_per_letter_count[letter_count]}")
-                    new_value = safeint(new_value)
-                    if new_value:
-                        score_per_letter_count[letter_count] = new_value
-                    else:
-                        print_error("Bad score specified.")
-                return proc
-
-            procedures_list = [
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            item = 1
-            for key in word_count_per_letter_count.keys():
-                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
-                item += 1
-
-            status_footer = None
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Score per letter count", "?",
-                                                        procedures_list,
-                                                        after_header="Choose the letter count",
-                                                        status_footer=status_footer)
-
-                if status_code != STATUS_SUCCESS:
-                    status_footer = "Invalid option."
-                    continue
-                else:
-                    status_footer = None
-    
-                if option == 0:  # exit option
-                    break
-
-                procedures.do_execute_procedure(procedures_list, option)
-
-
-        def __opt_word_counts():
-            nonlocal word_count_per_letter_count
-
-            def __edit_word_count(letter_count):
-                def proc():
-                    nonlocal word_count_per_letter_count
-                    new_value = dialog.input(f"Choose how many words for {letter_count}-letter words to appear.\n \nCurrent: {word_count_per_letter_count[letter_count]}")
-                    new_value = safeint(new_value)
-                    if new_value:
-                        word_count_per_letter_count[letter_count] = new_value
-                    else:
-                        print_error("Bad word count specified.")
-                return proc
-
-            procedures_list = [
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            item = 1
-            for key in word_count_per_letter_count.keys():
-                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
-                item += 1
-
-            status_footer = None
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Word counts", "?",
-                                                        procedures_list,
-                                                        after_header="Choose the letter count",
-                                                        status_footer=status_footer)
-
-                if status_code != STATUS_SUCCESS:
-                    status_footer = "Invalid option."
-                    continue
-                else:
-                    status_footer = None
-    
-                if option == 0:  # exit option
-                    break
-
-                procedures.do_execute_procedure(procedures_list, option)
-
-        procedures_list = [
-            procedures.defproc(1, "Words shuffled randomly", __opt_words_shuffled_randomly),
-            procedures.defproc(2, "Show words in advance", __opt_show_words_in_advance),
-            procedures.defproc(3, "Letter counts", __opt_letter_counts),
-            procedures.defproc(4, "Word counts", __opt_word_counts),
-            procedures.defproc(5, "Score per letter count", __opt_score_per_letter_count),
-            procedures.defproc(0, "Exit", None)
-        ]
-
-        status_footer = None
-        procedure_offset = 0
-        while True:
-            status_code, option, _ = procedures.ask_procedure("Settings", "?",
-                                                                          procedures_list,
-                                                                          status_footer=status_footer,
-                                                                          after_header=RULES,
-                                                                          procedure_offset=procedure_offset)
-
-            if status_code == STATUS_NEXT and option is not None:
-                procedure_offset += option
-                continue
-            elif status_code == STATUS_PREVIOUS and option is not None:
-                procedure_offset -= option
-                continue
-            
-            status_code = procedures.do_execute_procedure(procedures_list, option)
-            if status_code != STATUS_SUCCESS:
-                status_footer = "Invalid option."
-                continue
-            else:
-                status_footer = None
-
-            if option == 0:  # exit option
-                break
-
 
     # picks random words with a criteria, that `count`
     # words will be given with `letter_count` letters in it from the word bank.
@@ -665,8 +465,208 @@ def typing_game():
             print_error(f"The score could not be calculated: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
 
 
-    def destroy():
+    def destroy(): # do nothing on destroy
         pass
+
+    def __settings():
+        nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
+
+        def __opt_words_shuffled_randomly():
+            nonlocal words_in_random
+
+            procedures_list = [
+                procedures.defproc(1, "Toggle", None),
+                procedures.defproc(0, "Go Back", None)
+            ]
+
+            description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
+
+            while True:
+                status_code, option, _ = procedures.ask_procedure("Words shuffled randomly", "?",
+                                                        procedures_list,
+                                                        after_header=description)
+                if status_code == STATUS_SUCCESS:
+                    if option == 0:
+                        break
+                    elif option == 1:
+                        words_in_random = not words_in_random
+
+                description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
+
+        def __opt_show_words_in_advance():
+            nonlocal show_words_in_advance
+
+            procedures_list = [
+                procedures.defproc(1, "Toggle", None),
+                procedures.defproc(0, "Go Back", None)
+            ]
+
+            description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
+
+            while True:
+                status_code, option, _ = procedures.ask_procedure("Show words in advance", "?",
+                                                        procedures_list,
+                                                        after_header=description)
+                if status_code == STATUS_SUCCESS:
+                    if option == 0:
+                        break
+                    elif option == 1:
+                        show_words_in_advance = not show_words_in_advance
+
+                description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
+
+        def __opt_letter_counts():
+            nonlocal letter_count_to_include
+
+            procedures_list = [
+                procedures.defproc(1, "Add", None),
+                procedures.defproc(2, "Remove", None),
+                procedures.defproc(0, "Go Back", None)
+            ]
+
+            description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
+
+            while True:
+                status_code, option, _ = procedures.ask_procedure("Letter counts", "?",
+                                                        procedures_list,
+                                                        after_header=description)
+                if status_code == STATUS_SUCCESS:
+                    if option == 0:
+                        break
+                    elif option == 1:
+                        count = dialog.input("How many letters?", "Letter counts")
+                        count = safeint(count)
+                        if count is not None and find(letter_count_to_include, count) is None:
+                            letter_count_to_include.append(count)
+                        else:
+                            print_error("Letter count is invalid or already included.")
+                    elif option == 2:
+                        count = dialog.input(f"Specify letter count to remove? ({letter_count_to_include})", "Letter counts")
+                        count = safeint(count)
+                        if count is not None and find(letter_count_to_include, count) is not None:
+                            letter_count_to_include.remove(count)
+                        else:
+                            print_error("Letter count is invalid or not in the list.")
+
+                description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
+
+        def __opt_score_per_letter_count():
+            nonlocal score_per_letter_count
+
+            def __edit_word_count(letter_count):
+                def proc():
+                    nonlocal score_per_letter_count
+                    new_value = dialog.input(f"Choose how much score given for {letter_count}-letter words if typed correctly.\n \nCurrent: {score_per_letter_count[letter_count]}")
+                    new_value = safeint(new_value)
+                    if new_value:
+                        score_per_letter_count[letter_count] = new_value
+                    else:
+                        print_error("Bad score specified.")
+                return proc
+
+            procedures_list = [
+                procedures.defproc(0, "Go Back", None)
+            ]
+
+            item = 1
+            for key in word_count_per_letter_count.keys():
+                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
+                item += 1
+
+            status_footer = None
+            while True:
+                status_code, option, _ = procedures.ask_procedure("Score per letter count", "?",
+                                                        procedures_list,
+                                                        after_header="Choose the letter count",
+                                                        status_footer=status_footer)
+
+                if status_code != STATUS_SUCCESS:
+                    status_footer = "Invalid option."
+                    continue
+                else:
+                    status_footer = None
+    
+                if option == 0:  # exit option
+                    break
+
+                procedures.do_execute_procedure(procedures_list, option)
+
+
+        def __opt_word_counts():
+            nonlocal word_count_per_letter_count
+
+            def __edit_word_count(letter_count):
+                def proc():
+                    nonlocal word_count_per_letter_count
+                    new_value = dialog.input(f"Choose how many words for {letter_count}-letter words to appear.\n \nCurrent: {word_count_per_letter_count[letter_count]}")
+                    new_value = safeint(new_value)
+                    if new_value:
+                        word_count_per_letter_count[letter_count] = new_value
+                    else:
+                        print_error("Bad word count specified.")
+                return proc
+
+            procedures_list = [
+                procedures.defproc(0, "Go Back", None)
+            ]
+
+            item = 1
+            for key in word_count_per_letter_count.keys():
+                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
+                item += 1
+
+            status_footer = None
+            while True:
+                status_code, option, _ = procedures.ask_procedure("Word counts", "?",
+                                                        procedures_list,
+                                                        after_header="Choose the letter count",
+                                                        status_footer=status_footer)
+
+                if status_code != STATUS_SUCCESS:
+                    status_footer = "Invalid option."
+                    continue
+                else:
+                    status_footer = None
+    
+                if option == 0:  # exit option
+                    break
+
+                procedures.do_execute_procedure(procedures_list, option)
+
+        procedures_list = [
+            procedures.defproc(1, "Words shuffled randomly", __opt_words_shuffled_randomly),
+            procedures.defproc(2, "Show words in advance", __opt_show_words_in_advance),
+            procedures.defproc(3, "Letter counts", __opt_letter_counts),
+            procedures.defproc(4, "Word counts", __opt_word_counts),
+            procedures.defproc(5, "Score per letter count", __opt_score_per_letter_count),
+            procedures.defproc(0, "Exit", None)
+        ]
+
+        status_footer = None
+        procedure_offset = 0
+        while True:
+            status_code, option, _ = procedures.ask_procedure("Settings", "?",
+                                                                            procedures_list,
+                                                                            status_footer=status_footer,
+                                                                            after_header=RULES,
+                                                                            procedure_offset=procedure_offset)
+
+            if status_code == STATUS_NEXT and option is not None:
+                procedure_offset += option
+                continue
+            elif status_code == STATUS_PREVIOUS and option is not None:
+                procedure_offset -= option
+                continue
+            
+            status_code = procedures.do_execute_procedure(procedures_list, option)
+            if status_code != STATUS_SUCCESS:
+                status_footer = "Invalid option."
+                continue
+            else:
+                status_footer = None
+
+            if option == 0:  # exit option
+                break
 
     return {
         "init": init,
