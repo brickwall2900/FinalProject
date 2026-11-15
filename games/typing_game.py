@@ -39,16 +39,7 @@ def typing_game():
         # load settings
         error_code, settings = persistence.load_persistence("typing_game")
         if error_code == STATUS_FILE_NOT_FOUND:
-            settings = {
-                "WordsInRandom": str(words_in_random),
-                "ShowWordsInAdvance": str(show_words_in_advance),
-                "LetterCountToInclude": ",".join([str(x) for x in letter_count_to_include]), # yeah i know what this shit does now
-            }
-            for letter_count in letter_count_to_include:
-                settings[f"WordCountPerLetterCount_{letter_count}"] = str(word_count_per_letter_count[letter_count])
-                settings[f"ScorePerLetterCount_{letter_count}"] = str(score_per_letter_count[letter_count])
-
-            persistence.save_persistence("typing_game", settings)
+            __save_settings()
         elif error_code == STATUS_SUCCESS and settings is not None:
             if "WordsInRandom" in settings:
                 words_in_random = str_to_bool(settings["WordsInRandom"])
@@ -118,6 +109,18 @@ def typing_game():
 
         dialog.alert("TLDR; Type correct words = more points\n \n" \
         "hello\n \n> henlo\n \n!! INCORRECT !! you get 0 points...", "About")
+
+    def __save_settings():
+        settings = {
+            "WordsInRandom": str(words_in_random),
+            "ShowWordsInAdvance": str(show_words_in_advance),
+            "LetterCountToInclude": ",".join([str(x) for x in letter_count_to_include]), # yeah i know what this shit does now
+        }
+        for letter_count in letter_count_to_include:
+            settings[f"WordCountPerLetterCount_{letter_count}"] = str(word_count_per_letter_count[letter_count])
+            settings[f"ScorePerLetterCount_{letter_count}"] = str(score_per_letter_count[letter_count])
+
+        persistence.save_persistence("typing_game", settings)
 
 
     # picks random words with a criteria, that `count`
@@ -666,6 +669,7 @@ def typing_game():
                 status_footer = None
 
             if option == 0:  # exit option
+                __save_settings()
                 break
 
     return {
