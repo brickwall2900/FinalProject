@@ -192,5 +192,5 @@ def str_to_bool(given):
 
     return given.strip().lower() == "true"
 
-use_advanced_terminal_graphics = str_to_bool(os.environ.get("ADV_TERM_GFX", "True")) and False 
+use_advanced_terminal_graphics = str_to_bool(os.environ.get("ADV_TERM_GFX", "True")) and True
 # use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24

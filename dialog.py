@@ -20,7 +20,7 @@ def alert(message,
 
     status_footer = None
     while True:
-        _, option, raw_option = procedures.ask_procedure(title,
+        _, option, _ = procedures.ask_procedure(title,
                                              "!",
                                              procedure_list,
                                              after_header=message,
@@ -30,4 +30,16 @@ def alert(message,
             return options[option] if options is not None else True # wtf am is supposed to give!?
         else:
             return default_option
-        
+
+def input(message,
+          title="Input",
+          prompt="Enter: "):
+
+    # okay tihs might just be stpid
+    _, _, raw_option = procedures.ask_procedure(title,
+                                                "!",
+                                                None,
+                                                after_header=message,
+                                                prompt=prompt)
+    return raw_option
+    

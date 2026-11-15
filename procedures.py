@@ -53,14 +53,12 @@ def __ask_procedure_basic(header,
             print("[W] Next page...")
         if has_prev:
             print("[Q] Prev page...")
-    else:
-        print("Press [ENTER] to continue...")
 
     if status_footer is not None:
             print(status_footer)
             print()
 
-    raw_option = input(prompt if has_procedures else "")
+    raw_option = input(prompt)
     option = safeint(raw_option)
 
     if option is None and has_procedures:
@@ -153,10 +151,6 @@ def __ask_procedure_fancy(header,
                                             procedure_y)
                 procedure_y += 1
             print(terminal.ESCAPE_RESET_GRAPHICS, end="")
-    else:
-        terminal.tgfx_print_text(f"Press [ENTER] to continue...", pos_x,
-                                                    procedure_y)
-        procedure_y += 1
 
     if has_procedures:
         print()
@@ -170,7 +164,7 @@ def __ask_procedure_fancy(header,
     terminal.tgfx_print_text(border, pos_x, procedure_y + 1)
     terminal.put_cursor_to(pos_x, procedure_y)
 
-    raw_option = input(prompt if has_procedures else "")
+    raw_option = input(prompt)
     option = safeint(raw_option)
     terminal.tgfx_draw_rect(pos_x,
                             pos_y,
