@@ -3,8 +3,8 @@
 - [ ] base game
     - [x] typing game
     - [ ] tutorial
-    - [ ] leaderboard
-    - [ ] save/load
+    - [x] leaderboard
+    - [x] save/load
 - [ ] profiles
 - [ ] candy crush
 - [ ] wordle
