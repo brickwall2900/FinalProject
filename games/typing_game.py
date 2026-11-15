@@ -471,6 +471,9 @@ def typing_game():
     def destroy(): # do nothing on destroy
         pass
 
+    # UMM OKAY NOTE
+    # there has to be a better way to do this shit
+    # I owe an apology to the professors whom they will be reviewing this code.
     def __settings():
         nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
 
