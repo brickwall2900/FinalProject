@@ -133,6 +133,10 @@ def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
     if max_width < 0:
         return STATUS_OUT_OF_BOUNDS
 
+    x = int(x)
+    y = int(y)
+    max_width = int(max_width)
+
     pos_x = x
     pos_y = y
     
@@ -188,5 +192,5 @@ def str_to_bool(given):
 
     return given.strip().lower() == "true"
 
-use_advanced_terminal_graphics = str_to_bool(os.environ.get("ADV_TERM_GFX", "True")) and True
+use_advanced_terminal_graphics = str_to_bool(os.environ.get("ADV_TERM_GFX", "True")) and False 
 # use_advanced_terminal_graphics = use_advanced_terminal_graphics and get_width() >= 80 and get_height() >= 24
