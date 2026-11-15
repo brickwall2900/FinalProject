@@ -142,7 +142,7 @@ def typing_game():
                     elif option == 1:
                         words_in_random = not words_in_random
 
-            description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
+                description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
 
         def __opt_show_words_in_advance():
             nonlocal show_words_in_advance
@@ -497,6 +497,8 @@ def typing_game():
 
     def __save_to_leaderboard(time_taken, score, judgement_table):
         name = dialog.input("What is your name?")
+        assert name is not None
+        name = name.replace(",", "")
 
         # list incomprehension
         serialized_judgement_table = "::".join([f"({x[0].replace('::', '').replace(',', '').replace('|', '')}|{x[1].replace('::', '').replace(',', '').replace('|', '')}|{x[2]})" for x in judgement_table])
@@ -533,7 +535,7 @@ def typing_game():
         # second step is iterate and parse through entries
         real_leaderboard = []
         for i in range(entry_count+1):
-            entry = str(leaderboard.get(f"Entry{i+1}"))
+            entry = leaderboard.get(f"Entry{i+1}")
             if entry is None:
                 continue
 
@@ -556,7 +558,7 @@ def typing_game():
         ]
         for i in range(len(real_leaderboard)):
             entry = real_leaderboard[i]
-            procedure_list.append(procedures.defproc(i + 1, f"{entry[0]}, {entry[2] if entry[2] is not None else "Unknown"} pts, {entry[1] if entry[2] is not None else "Unknown"} secs",
+            procedure_list.append(procedures.defproc(i + 1, f"{entry[0]}, {entry[2] if entry[2] is not None else "Unknown"} pts, {entry[1] if entry[2] is not None else "Unknown":.2f} secs",
                                                      lambda entry=entry: __view_score_table(entry[1], entry[2], __parse_serialized_judgement_table(entry[3]), entry[0])))
 
         status_footer = None
