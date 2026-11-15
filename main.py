@@ -45,7 +45,7 @@ def init():
     #     elif status_code == STATUS_PREVIOUS:
     #         offset -= option
 
-    # dialog.alert("Hello!")
+    dialog.alert("Hello!", "Dialog", None)
 
     if not terminal.use_advanced_terminal_graphics:
         print("Fancy terminal graphics are disabled!")
