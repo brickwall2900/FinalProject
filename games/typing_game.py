@@ -2,7 +2,7 @@ import os
 
 import ansi
 import terminal
-from common import print_error, shuffle, str_to_bool, safeint
+from common import print_error, shuffle, str_to_bool, safeint, safefloat, sort
 from data import word_bank
 import persistence
 
@@ -13,18 +13,19 @@ import time
 import random
 
 from status import STATUS_UNDERPOPULATED, STATUS_SUCCESS, STATUS_ALREADY_EXISTS, STATUS_FILE_NOT_FOUND, \
-    STATUS_CODE_TO_LITERAL_TABLE
+    STATUS_CODE_TO_LITERAL_TABLE, STATUS_NEXT, STATUS_PREVIOUS
 
 RULES = "The Typing Game tests your typing skills by you typing words with speed and accuracy!"
 
 def typing_game():
     words_in_random = True
+    show_words_in_advance = True
     letter_count_to_include = [3, 4, 5]
     word_count_per_letter_count = { 3: 7, 4: 7, 5: 7 }
     score_per_letter_count = { 3: 2, 4: 5, 5: 7 }
 
     def init():
-        nonlocal words_in_random, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
+        nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
         error_code, word_count = word_bank.try_loading_words()
         success = (error_code == STATUS_SUCCESS
                    or error_code == STATUS_ALREADY_EXISTS)
@@ -40,6 +41,7 @@ def typing_game():
         if error_code == STATUS_FILE_NOT_FOUND:
             settings = {
                 "WordsInRandom": str(words_in_random),
+                "ShowWordsInAdvance": str(show_words_in_advance),
                 "LetterCountToInclude": ",".join([str(x) for x in letter_count_to_include]), # yeah i know what this shit does now
             }
             for letter_count in letter_count_to_include:
@@ -50,6 +52,9 @@ def typing_game():
         elif error_code == STATUS_SUCCESS and settings is not None:
             if "WordsInRandom" in settings:
                 words_in_random = str_to_bool(settings["WordsInRandom"])
+
+            if "ShowWordsInAdvance" in settings:
+                show_words_in_advance = str_to_bool(settings["ShowWordsInAdvance"])
 
             if "LetterCountToInclude" in settings:
                 letter_count_to_include = [x for x in [safeint(x) for x in str(settings["LetterCountToInclude"]).split(",")] if x is not None]
@@ -71,7 +76,7 @@ def typing_game():
     def run():
         procedures_list = [
             procedures.defproc(1, "Start", game),
-            procedures.defproc(2, "Leaderboards", None),
+            procedures.defproc(2, "Leaderboards", __view_leaderboard),
             procedures.defproc(3, "Settings", None),
             procedures.defproc(4, "About", __view_about),
             procedures.defproc(0, "Exit", None)
@@ -79,7 +84,7 @@ def typing_game():
 
         before_header = None
         while True:
-            _, option = procedures.ask_procedure("Typing Game!!", "+",
+            _, option, _ = procedures.ask_procedure("Typing Game!!", "+",
                                                                           procedures_list,
                                                                           status_footer=before_header,
                                                                           after_header=RULES)
@@ -95,7 +100,7 @@ def typing_game():
 
     def __view_about():
         dialog.alert("The Typing Game tests how fast you can type words correctly!!" \
-        "Type more words correctly, the more points you get. Better if you can type" \
+        " Type more words correctly, the more points you get. Better if you can type" \
         " words with speed and accuracy!", "About")
 
     # picks random words with a criteria, that `count`
@@ -147,6 +152,7 @@ def typing_game():
         if len(correct_input_list) < len(user_input_list):
             return STATUS_UNDERPOPULATED, 0, []
 
+        # list of tuples (correct_word, user_input_word, score)
         judgement_table = []
         score = 0
         for i in range(len(correct_input_list)):
@@ -159,7 +165,7 @@ def typing_game():
             given_score = score_per_letter_count[letter_count]
             if correct_input == user_input:
                 score += given_score
-            judgement_table.append((correct_input, user_input, given_score if correct_input == user_input else 0))
+            judgement_table.append((correct_input, user_input, (given_score if correct_input == user_input else 0)))
 
         return STATUS_SUCCESS, score, judgement_table
 
@@ -197,7 +203,7 @@ def typing_game():
                 print(countdown)
             time.sleep(0.5)
 
-    def __print_word(word):
+    def __print_word(word, future_words):
         if terminal.use_advanced_terminal_graphics:
             terminal.erase_whole_screen()
             terminal.reset_cursor_to_top_left()
@@ -208,48 +214,202 @@ def typing_game():
             height = terminal.get_height()
             pos_x = width / 2 - max_width / 2
             pos_y = height / 2
+            dialog_width = len("======================================")
 
-            terminal.tgfx_print_text("======================================", pos_x, pos_y - 1)
+            terminal.tgfx_print_text("=" * dialog_width, pos_x, pos_y - 1)
             terminal.tgfx_print_text("TYPE THE WORD BELOW THEN PRESS [Enter]", pos_x, pos_y)
-            print(ansi.bold("", persist=True), end="")
-            terminal.tgfx_print_text(word, pos_x, pos_y + 1)
-            print(terminal.ESCAPE_RESET_GRAPHICS, end="")
-            terminal.tgfx_print_text("> ", pos_x, pos_y + 3)
-            terminal.tgfx_print_text("======================================", pos_x, pos_y + 4)
+
+            word_x = pos_x
+            terminal.tgfx_print_text(ansi.underline(ansi.bold(word)), word_x, pos_y + 1)
+            word_x += len(ansi.get_raw_string(word)) + 1
+
+            if show_words_in_advance:
+                future_word_length = 0
+                for future in future_words:
+                    length = len(ansi.get_raw_string(future)) + 1
+                    future_word_length += length
+                    if future_word_length > dialog_width:
+                        break
+                    terminal.tgfx_print_text(ansi.bold(future), word_x + future_word_length - length, pos_y + 1)
+
+            terminal.tgfx_print_text(">", pos_x, pos_y + 3)
+            terminal.tgfx_print_text("=" * dialog_width, pos_x, pos_y + 4)
             terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
         else:
             print("TYPE THE WORD BELOW THEN PRESS [Enter]")
-            print(word)
+            print(f">> {word} << {" ".join([future_words[i] for i in range(len(future_words)) if i < 5]) if show_words_in_advance else ""}")
             print("> ", end="")
 
     def __print_congrats(time_taken, score, judgement_table):
         procedures_list = [
             procedures.defproc(1, "View Score Table", lambda: __view_score_table(time_taken, score, judgement_table)),
+            procedures.defproc(2, "Submit to Leaderboard", lambda: __save_to_leaderboard(time_taken, score, judgement_table)),
             procedures.defproc(0, "Exit", None)
         ]
 
         after_header = str(ansi.fgcolor(ansi.bold("Congratulations! You took {:.2f} seconds to type all words.".format(time_taken)),
                                         terminal.COLOR_YELLOW))
         after_header += "\n\n"
-        after_header += str(ansi.fgcolor(ansi.bold("Your score is {:d}. Nice!!".format(score)), terminal.COLOR_YELLOW))
+        after_header += str(ansi.fgcolor(ansi.bold("Your score is {:d}. Good job!".format(score)), terminal.COLOR_YELLOW))
 
         before_header = None
+
+        submitted_to_leaderboard = False
         while True:
-            _, option = procedures.ask_procedure(str(ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)),
+            _, option, _ = procedures.ask_procedure((ansi.fgcolor(ansi.bold("CONGRATULATIONS!!"), terminal.COLOR_YELLOW)) if terminal.use_advanced_terminal_graphics else "CONGRATULATIONS!!",
                                                  "+",
                                                  procedures_list,
                                                  status_footer=before_header,
-                                                 after_header=after_header)
+                                                 after_header=after_header if terminal.use_advanced_terminal_graphics else ansi.get_raw_string(after_header))
+
+            if option == 2:
+                if submitted_to_leaderboard:
+                    before_header = "Already submitted."
+                    continue
+                else:
+                    submitted_to_leaderboard = True
+                    before_header = "Submitted!"
+
             status_code = procedures.do_execute_procedure(procedures_list, option)
             if status_code != STATUS_SUCCESS:
                 before_header = "Invalid option."
                 continue
 
-            break
+            if option == 0:
+                break # exit
 
-    def __view_score_table(time_taken, score, judgement_table):
+    def __save_to_leaderboard(time_taken, score, judgement_table):
+        name = dialog.input("What is your name?")
 
-        pass
+        # list incomprehension
+        serialized_judgement_table = "::".join([f"({x[0].replace('::', '').replace(',', '').replace('|', '')}|{x[1].replace('::', '').replace(',', '').replace('|', '')}|{x[2]})" for x in judgement_table])
+        new_entry = f"{name},{time_taken},{score},{serialized_judgement_table}"
+
+        status_code, leaderboard = persistence.load_persistence("leaderboard-typing_game")
+        if status_code == STATUS_SUCCESS and leaderboard is not None:
+            nextEntry = safeint(leaderboard.get("NextEntry", "1")) or 1
+
+            leaderboard[f"Entry{nextEntry}"] = new_entry
+            leaderboard["NextEntry"] = str(nextEntry + 1)
+        else:
+            leaderboard = {}
+            leaderboard["NextEntry"] = 1
+            leaderboard[f"Entry{leaderboard["NextEntry"]}"] = new_entry
+
+        persistence.save_persistence("leaderboard-typing_game", leaderboard)
+
+        __view_leaderboard()
+
+    def __view_leaderboard():
+        status_code, leaderboard = persistence.load_persistence("leaderboard-typing_game")
+        if status_code == STATUS_FILE_NOT_FOUND:
+            print_error("Leaderbord has not been created yet. Play a game first then submit a run to the leaderboard!")
+            return
+
+        if status_code != STATUS_SUCCESS or leaderboard is None:
+            print_error("Leaderboard cannot be loaded because of file corruption.")
+            return
+
+        # first step in loading the leaderboard, get the number of entries
+        entry_count = safeint(leaderboard.get("NextEntry", "1")) or 1
+
+        # second step is iterate and parse through entries
+        real_leaderboard = []
+        for i in range(entry_count+1):
+            entry = str(leaderboard.get(f"Entry{i+1}"))
+            if entry is None:
+                continue
+
+            parsed_entry = entry.split(",")
+            if len(parsed_entry) != 4: # terminate immediately
+                break
+            name, time, score = parsed_entry[0], parsed_entry[1], parsed_entry[2]
+            judgement_table_serialized = parsed_entry[3]
+
+            real_leaderboard.append((name, safefloat(time), safeint(score), judgement_table_serialized))
+
+        # sort them as well
+        def leaderboard_comparator(this, that):
+            return that[2] - this[2]
+        sort(real_leaderboard, leaderboard_comparator)
+
+        # third is make it all procedures
+        procedure_list = [
+            procedures.defproc(0, "Exit", None)
+        ]
+        for i in range(len(real_leaderboard)):
+            entry = real_leaderboard[i]
+            procedure_list.append(procedures.defproc(i + 1, f"{entry[0]}, {entry[2] if entry[2] is not None else "Unknown"} pts, {entry[1] if entry[2] is not None else "Unknown"} secs",
+                                                     lambda entry=entry: __view_score_table(entry[1], entry[2], __parse_serialized_judgement_table(entry[3]), entry[0])))
+
+        status_footer = None
+        procedure_offset = 0
+        while True:
+            status_code, option_or_page, _ = procedures.ask_procedure("Leaderboard",
+                                                    "v",
+                                                    procedure_list,
+                                                    status_footer=status_footer,
+                                                    procedure_offset=procedure_offset,
+                                                    procedure_limit=10)
+
+            if status_code == STATUS_SUCCESS and option_or_page == 0:
+                break # exit
+
+            if status_code == STATUS_NEXT and option_or_page:
+                procedure_offset += option_or_page
+                continue
+            elif status_code == STATUS_PREVIOUS and option_or_page:
+                procedure_offset -= option_or_page
+                continue
+
+            status_code = procedures.do_execute_procedure(procedure_list, option_or_page)
+            
+            if status_code != STATUS_SUCCESS:
+                status_footer = "Invalid option."
+                continue
+
+    def __parse_serialized_judgement_table(serialized):
+        table_entries = str(serialized).split("::")
+        judgement_table = []
+        for x in table_entries:
+            x = x[1:-1]
+            entry = x.split("|")
+            judgement_table.append((entry[0], entry[1], safeint(entry[2])))
+
+        return judgement_table
+
+
+    def __view_score_table(time_taken, score, judgement_table, name=None):
+        # (correct_word, user_input_word, score)
+        procedure_list = [
+            procedures.defproc(0, "Exit", None)
+        ]
+
+        for i in range(len(judgement_table)):
+            entry = judgement_table[i]
+            procedure_list.append(procedures.defproc(i+1, f"{entry[0]} | {entry[1]} | +{entry[2]}", None))
+
+        
+        status_footer = None
+        procedure_offset = 0
+        while True:
+            status_code, option_or_page, _ = procedures.ask_procedure(f"Viewing scores for {name}" if name is not None else "Viewing scores",
+                                                    "$",
+                                                    procedure_list,
+                                                    after_header="\n<correct> | <you typed> | <score>",
+                                                    status_footer=status_footer,
+                                                    procedure_offset=procedure_offset,
+                                                    procedure_limit=10)
+
+            if status_code == STATUS_SUCCESS and option_or_page == 0:
+                break # exit
+
+            if status_code == STATUS_NEXT and option_or_page:
+                procedure_offset += option_or_page
+                continue
+            elif status_code == STATUS_PREVIOUS and option_or_page:
+                procedure_offset -= option_or_page
+                continue
 
     def game():
         status_code = __validate_invariants()
@@ -268,8 +428,9 @@ def typing_game():
 
         timestamp_start = time.time()
         user_typed_words = []
-        for word in words:
-            __print_word(word)
+        for i in range(len(words)):
+            word = words[i]
+            __print_word(word, words[i+1:])
 
             user_input = input()
             user_typed_words.append(user_input)
@@ -282,7 +443,7 @@ def typing_game():
         if status_code == STATUS_SUCCESS:
             __print_congrats(time_taken, score, judgement_table)
         else:
-            print_error(f"The score could not be calculated: {status_code}")
+            print_error(f"The score could not be calculated: {STATUS_CODE_TO_LITERAL_TABLE[status_code]}")
 
 
     def destroy():
