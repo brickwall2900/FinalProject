@@ -68,6 +68,13 @@ def sort(the_list, comparator):
                 min = j
         swap(the_list, i, min)
 
+def find(haystack, needle):
+    for i in range(len(haystack)):
+        if haystack[i] == needle:
+            return i
+
+    return None
+
 # Shuffles a list in-place
 # i implemented my own for aura points
 def shuffle(the_list):
