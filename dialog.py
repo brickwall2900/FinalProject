@@ -18,10 +18,9 @@ def alert(message,
                                                     f"({option})" if default_option == option else option,
                                                     None))
 
-    _, option = None, None
     status_footer = None
     while True:
-        _, option = procedures.ask_procedure(title,
+        _, option, raw_option = procedures.ask_procedure(title,
                                              "!",
                                              procedure_list,
                                              after_header=message,

@@ -42,7 +42,7 @@ def __ask_procedure_basic(header,
     if has_procedures:
         if procedure_count == 0:
             print("<none>")
-            return STATUS_SUCCESS, 0 # FIXME: what to do?
+            return STATUS_SUCCESS, 0, None # FIXME: what to do?
 
         for procedure in visible_procedures:
             print(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}")
@@ -65,12 +65,12 @@ def __ask_procedure_basic(header,
 
     if option is None and has_procedures:
         if raw_option.upper().endswith("Q") and has_prev: # left arrow
-            return STATUS_PREVIOUS, page_size
+            return STATUS_PREVIOUS, page_size, None
         elif raw_option.upper().endswith("W") and has_next: # right arrow
-            return STATUS_NEXT, page_size
+            return STATUS_NEXT, page_size, None
     
     print()
-    return STATUS_SUCCESS, option
+    return STATUS_SUCCESS, option, raw_option
 
 def __ask_procedure_fancy(header,
                           separator_char,
@@ -181,11 +181,11 @@ def __ask_procedure_fancy(header,
 
     if option is None and has_procedures:
         if raw_option.upper().endswith("Q") and has_prev: # left arrow
-            return STATUS_PREVIOUS, page_size
+            return STATUS_PREVIOUS, page_size, None
         elif raw_option.upper().endswith("W") and has_next: # right arrow
-            return STATUS_NEXT, page_size
+            return STATUS_NEXT, page_size, None
 
-    return STATUS_SUCCESS, option
+    return STATUS_SUCCESS, option, raw_option
 
     # return pos_x, pos_y, max_width, mpos_y - pos_y - 2 + max(1, len(procedures))
 

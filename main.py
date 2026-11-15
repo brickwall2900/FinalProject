@@ -72,7 +72,7 @@ def loop():
 
     before_header = None
     while True:
-        _, option = procedures.ask_procedure(" ++ Game Selection ++ ",
+        _, option, _ = procedures.ask_procedure(" ++ Game Selection ++ ",
                                              "..", procedure_list,
                                              status_footer=before_header)
         status_code = procedures.do_execute_procedure(procedure_list, option)
