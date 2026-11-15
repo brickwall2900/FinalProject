@@ -10,10 +10,40 @@ from status import STATUS_INDEX_OUT_OF_BOUNDS, STATUS_SUCCESS
 
 # safeint() functions equivalently like int(), but returns `None` on invalid input.
 def safeint(given, default=None):
-    if str.isdigit(given):
+    if str.isdigit(given) and str.isascii(given):
         return int(given)
     else:
         return default
+
+def safefloat(given, default=None):
+    valid = True
+
+    if not isinstance(given, str):
+        return default
+
+    given = given.strip().lower()
+
+    test = given
+    if test.startswith("+") or test.startswith("-"):
+        test = test[1:]
+
+    if test.count("e") > 1 or test.count(".") > 1:
+        return default
+
+    if "e" in test:
+        _, part2 = test.split("e")
+        if part2.startswith("+") or part2.startswith("-"):
+            part2 = part2[1:]
+        if not (part2.isascii() and part2.isdigit()):
+            return default
+
+    test = test.replace(".", "")
+    if test.isdigit() and test.isascii():
+        return float(given)
+    else:
+        return default
+    
+
 
 # Swaps two items in a list in-place.
 def swap(the_list, a, b):
