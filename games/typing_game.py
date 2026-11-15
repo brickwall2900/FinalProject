@@ -17,15 +17,24 @@ from status import STATUS_UNDERPOPULATED, STATUS_SUCCESS, STATUS_ALREADY_EXISTS,
 
 RULES = "The Typing Game tests your typing skills by you typing words with speed and accuracy!"
 
+SETTINGS_DEFAULT = {
+    "words_in_random": True,
+    "show_words_in_advance": True,
+    "letter_count_to_include": [3, 4, 5],
+    "word_count_per_letter_count": { 3: 7, 4: 7, 5: 7 },
+    "score_per_letter_count": { 3: 2, 4: 5, 5: 7 },
+}
+
 def typing_game():
-    words_in_random = True
-    show_words_in_advance = True
-    letter_count_to_include = [3, 4, 5]
-    word_count_per_letter_count = { 3: 7, 4: 7, 5: 7 }
-    score_per_letter_count = { 3: 2, 4: 5, 5: 7 }
+    settings = {
+        "words_in_random": SETTINGS_DEFAULT["words_in_random"],
+        "show_words_in_advance": SETTINGS_DEFAULT["show_words_in_advance"],
+        "letter_count_to_include": SETTINGS_DEFAULT["letter_count_to_include"],
+        "word_count_per_letter_count": SETTINGS_DEFAULT["word_count_per_letter_count"],
+        "score_per_letter_count": SETTINGS_DEFAULT["score_per_letter_count"],
+    }
 
     def init():
-        nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
         error_code, word_count = word_bank.try_loading_words()
         success = (error_code == STATUS_SUCCESS
                    or error_code == STATUS_ALREADY_EXISTS)
@@ -37,30 +46,30 @@ def typing_game():
                 return False
 
         # load settings
-        error_code, settings = persistence.load_persistence("typing_game")
+        error_code, settings_loaded = persistence.load_persistence("typing_game")
         if error_code == STATUS_FILE_NOT_FOUND:
             __save_settings()
-        elif error_code == STATUS_SUCCESS and settings is not None:
-            if "WordsInRandom" in settings:
-                words_in_random = str_to_bool(settings["WordsInRandom"])
+        elif error_code == STATUS_SUCCESS and settings_loaded is not None:
+            if "WordsInRandom" in settings_loaded:
+                settings["words_in_random"] = str_to_bool(settings_loaded["WordsInRandom"])
 
-            if "ShowWordsInAdvance" in settings:
-                show_words_in_advance = str_to_bool(settings["ShowWordsInAdvance"])
+            if "ShowWordsInAdvance" in settings_loaded:
+                settings["show_words_in_advance"] = str_to_bool(settings_loaded["ShowWordsInAdvance"])
 
-            if "LetterCountToInclude" in settings:
-                letter_count_to_include = [x for x in [safeint(x) for x in str(settings["LetterCountToInclude"]).split(",")] if x is not None]
+            if "LetterCountToInclude" in settings_loaded:
+                settings["letter_count_to_include"] = [x for x in [safeint(x) for x in str(settings_loaded["LetterCountToInclude"]).split(",")] if x is not None]
 
-            for letter_count in letter_count_to_include:
-                if f"WordCountPerLetterCount_{letter_count}" in settings:
-                    value = safeint(settings[f"WordCountPerLetterCount_{letter_count}"])
+            for letter_count in settings.get("letter_count_to_include", SETTINGS_DEFAULT["letter_count_to_include"]):
+                if f"WordCountPerLetterCount_{letter_count}" in settings_loaded:
+                    value = safeint(settings_loaded[f"WordCountPerLetterCount_{letter_count}"])
                     if value is not None:
-                        word_count_per_letter_count[letter_count] = value
-                if f"ScorePerLetterCount_{letter_count}" in settings:
-                    value = safeint(settings[f"ScorePerLetterCount_{letter_count}"])
+                        settings["word_count_per_letter_count"][letter_count] = value
+                if f"ScorePerLetterCount_{letter_count}" in settings_loaded:
+                    value = safeint(settings_loaded[f"ScorePerLetterCount_{letter_count}"])
                     if value is not None:
-                        score_per_letter_count[letter_count] = value
+                        settings["score_per_letter_count"][letter_count] = value
         else:
-            print_error("Settings file corrupt. Using default options instead.")
+            print_error("Settings file corrupt. Using default settings instead.")
 
         return success
 
@@ -105,22 +114,25 @@ def typing_game():
         " words with speed and accuracy!", "About")
 
         dialog.alert("TLDR; Type correct words = more points\n \n" \
-        "test\n \n> test\n \n!! CORRECT !!", "About")
+        "test\n \n> test (<- this is your input box)\n \n!! CORRECT !!", "About")
 
         dialog.alert("TLDR; Type correct words = more points\n \n" \
         "hello\n \n> henlo\n \n!! INCORRECT !! you get 0 points...", "About")
 
-    def __save_settings():
-        settings = {
-            "WordsInRandom": str(words_in_random),
-            "ShowWordsInAdvance": str(show_words_in_advance),
-            "LetterCountToInclude": ",".join([str(x) for x in letter_count_to_include]), # yeah i know what this shit does now
-        }
-        for letter_count in letter_count_to_include:
-            settings[f"WordCountPerLetterCount_{letter_count}"] = str(word_count_per_letter_count[letter_count])
-            settings[f"ScorePerLetterCount_{letter_count}"] = str(score_per_letter_count[letter_count])
+    def __get_setting(key):
+        return settings.get(key, SETTINGS_DEFAULT[key])
 
-        persistence.save_persistence("typing_game", settings)
+    def __save_settings():
+        saved_settings = {
+            "WordsInRandom": str(__get_setting("words_in_random")),
+            "ShowWordsInAdvance": str(__get_setting("show_words_in_advance")),
+            "LetterCountToInclude": ",".join([str(x) for x in __get_setting("letter_count_to_include")]), # yeah i know what this shit does now
+        }
+        for letter_count in settings["letter_count_to_include"]:
+            saved_settings[f"WordCountPerLetterCount_{letter_count}"] = str(__get_setting("word_count_per_letter_count")[letter_count])
+            saved_settings[f"ScorePerLetterCount_{letter_count}"] = str(__get_setting("score_per_letter_count")[letter_count])
+
+        persistence.save_persistence("typing_game", saved_settings)
 
 
     # picks random words with a criteria, that `count`
@@ -138,8 +150,8 @@ def typing_game():
     def __build_word_sequence():
         result = []
 
-        for letter_count in letter_count_to_include:
-            status_code, words = __pick_words(word_count_per_letter_count[letter_count], letter_count)
+        for letter_count in __get_setting("letter_count_to_include"):
+            status_code, words = __pick_words(__get_setting("word_count_per_letter_count")[letter_count], letter_count)
             if status_code == STATUS_SUCCESS and words is not None:
                 result.extend(words)
             else:
@@ -147,22 +159,23 @@ def typing_game():
                 print_error(f"Insufficient words in word bank. Please provide more {letter_count}-letter words.")
                 return status_code, None
 
-        if words_in_random:
+        if __get_setting("words_in_random"):
             shuffle(result)
 
         return STATUS_SUCCESS, result
 
     def __validate_invariants():
-        if len(letter_count_to_include) <= 0:
+        # thank goodness python is single-threaded or we are cooked.
+        if len(__get_setting("letter_count_to_include")) <= 0:
             print_error("At least one n-letter count must be specified.")
             return STATUS_UNDERPOPULATED
 
-        for letter_count in letter_count_to_include:
-            if not letter_count in word_count_per_letter_count:
+        for letter_count in __get_setting("letter_count_to_include"):
+            if not letter_count in __get_setting("word_count_per_letter_count"):
                 print_error(f"The word count for {letter_count}-letter words is unspecified.")
                 return STATUS_UNDERPOPULATED
 
-            if not letter_count in score_per_letter_count:
+            if not letter_count in __get_setting("score_per_letter_count"):
                 print_error(f"The score for {letter_count}-letter words is unspecified.")
                 return STATUS_UNDERPOPULATED
 
@@ -179,10 +192,10 @@ def typing_game():
             correct_input = correct_input_list[i]
             user_input = user_input_list[i]
             letter_count = len(correct_input)
-            if not letter_count in score_per_letter_count:
+            if not letter_count in __get_setting("score_per_letter_count"):
                 print_error(f"Score per {letter_count}-letter word is missing right now... How come?")
                 return STATUS_UNDERPOPULATED, 0, []
-            given_score = score_per_letter_count[letter_count]
+            given_score = __get_setting("score_per_letter_count")[letter_count]
             if correct_input == user_input:
                 score += given_score
             judgement_table.append((correct_input, user_input, (given_score if correct_input == user_input else 0)))
@@ -243,7 +256,7 @@ def typing_game():
             terminal.tgfx_print_text(ansi.underline(ansi.bold(word)), word_x, pos_y + 1)
             word_x += len(ansi.get_raw_string(word)) + 1
 
-            if show_words_in_advance:
+            if __get_setting("show_words_in_advance"):
                 future_word_length = 0
                 for future in future_words:
                     length = len(ansi.get_raw_string(future)) + 1
@@ -257,7 +270,7 @@ def typing_game():
             terminal.put_cursor_to(pos_x + 3, height / 2 + 3)
         else:
             print("TYPE THE WORD BELOW THEN PRESS [Enter]")
-            print(f">> {word} << {" ".join([future_words[i] for i in range(len(future_words)) if i < 5]) if show_words_in_advance else ""}")
+            print(f">> {word} << {" ".join([future_words[i] for i in range(len(future_words)) if i < 5]) if __get_setting("show_words_in_advance") else ""}")
             print("> ", end="")
 
     def __print_congrats(time_taken, score, judgement_table):
@@ -304,7 +317,7 @@ def typing_game():
         name = name.replace(",", "")
 
         # list incomprehension
-        serialized_judgement_table = "::".join([f"({x[0].replace('::', '').replace(',', '').replace('|', '')}|{x[1].replace('::', '').replace(',', '').replace('|', '')}|{x[2]})" for x in judgement_table])
+        serialized_judgement_table = "::".join([f"({"".join(x for x in x[0] if x.isalpha())}|{"".join(x for x in x[1] if x.isalpha())}|{x[2]})" for x in judgement_table])
         new_entry = f"{name},{time_taken},{score},{serialized_judgement_table}"
 
         status_code, leaderboard = persistence.load_persistence("leaderboard-typing_game")
@@ -344,7 +357,7 @@ def typing_game():
 
             parsed_entry = entry.split(",")
             if len(parsed_entry) != 4: # terminate immediately
-                break
+                continue
             name, time, score = parsed_entry[0], parsed_entry[1], parsed_entry[2]
             judgement_table_serialized = parsed_entry[3]
 
@@ -475,62 +488,38 @@ def typing_game():
     # there has to be a better way to do this shit
     # I owe an apology to the professors whom they will be reviewing this code.
     def __settings():
-        nonlocal words_in_random, show_words_in_advance, letter_count_to_include, word_count_per_letter_count, score_per_letter_count
+        def boolean_setting(key, name, description):
+            def proc():
+                
+                procedures_list = [
+                    procedures.defproc(1, "Toggle", None),
+                    procedures.defproc(0, "Go Back", None)
+                ]
+    
+                description_display = f"{description}\n \nCurrent value: {str(__get_setting(key)).upper()}"
+    
+                while True:
+                    status_code, option, _ = procedures.ask_procedure(name, "?",
+                                                            procedures_list,
+                                                            after_header=description_display)
+                    if status_code == STATUS_SUCCESS:
+                        if option == 0:
+                            break
+                        elif option == 1:
+                            settings[key] = not __get_setting(key)
+    
+                    description_display = f"{description}\n \nCurrent value: {str(__get_setting(key)).upper()}"
 
-        def __opt_words_shuffled_randomly():
-            nonlocal words_in_random
-
-            procedures_list = [
-                procedures.defproc(1, "Toggle", None),
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
-
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Words shuffled randomly", "?",
-                                                        procedures_list,
-                                                        after_header=description)
-                if status_code == STATUS_SUCCESS:
-                    if option == 0:
-                        break
-                    elif option == 1:
-                        words_in_random = not words_in_random
-
-                description = f"Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.\n \nCurrent value: {str(words_in_random).upper()}"
-
-        def __opt_show_words_in_advance():
-            nonlocal show_words_in_advance
-
-            procedures_list = [
-                procedures.defproc(1, "Toggle", None),
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
-
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Show words in advance", "?",
-                                                        procedures_list,
-                                                        after_header=description)
-                if status_code == STATUS_SUCCESS:
-                    if option == 0:
-                        break
-                    elif option == 1:
-                        show_words_in_advance = not show_words_in_advance
-
-                description = f"Show next words that will be typed.\n \nCurrent value: {str(show_words_in_advance).upper()}"
+            return proc
 
         def __opt_letter_counts():
-            nonlocal letter_count_to_include
-
             procedures_list = [
                 procedures.defproc(1, "Add", None),
                 procedures.defproc(2, "Remove", None),
                 procedures.defproc(0, "Go Back", None)
             ]
 
-            description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
+            description = f"Letter counts.\n \nCurrent value: {str(__get_setting("letter_count_to_include")).upper()}"
 
             while True:
                 status_code, option, _ = procedures.ask_procedure("Letter counts", "?",
@@ -542,109 +531,66 @@ def typing_game():
                     elif option == 1:
                         count = dialog.input("How many letters?", "Letter counts")
                         count = safeint(count)
-                        if count is not None and find(letter_count_to_include, count) is None:
-                            letter_count_to_include.append(count)
+                        if count is not None and find(__get_setting("letter_count_to_include"), count) is None:
+                            __get_setting("letter_count_to_include").append(count)
                         else:
                             print_error("Letter count is invalid or already included.")
                     elif option == 2:
-                        count = dialog.input(f"Specify letter count to remove? ({letter_count_to_include})", "Letter counts")
+                        count = dialog.input(f"Specify letter count to remove? ({__get_setting("letter_count_to_include")})", "Letter counts")
                         count = safeint(count)
-                        if count is not None and find(letter_count_to_include, count) is not None:
-                            letter_count_to_include.remove(count)
+                        if count is not None and find(__get_setting("letter_count_to_include"), count) is not None:
+                            __get_setting("letter_count_to_include").remove(count)
                         else:
                             print_error("Letter count is invalid or not in the list.")
 
-                description = f"Letter counts.\n \nCurrent value: {str(letter_count_to_include).upper()}"
+                description = f"Letter counts.\n \nCurrent value: {str(__get_setting("letter_count_to_include")).upper()}"
 
-        def __opt_score_per_letter_count():
-            nonlocal score_per_letter_count
+        def letter_setting(key, title, description):
+            def proc():
+                def __edit_for_letter_count(letter_count):
+                    def proc():
+                        new_value = dialog.input(f"{description} (for {letter_count}-letter words).\n \nCurrent: {__get_setting(key)[letter_count]}")
+                        new_value = safeint(new_value)
+                        if new_value:
+                            __get_setting(key)[letter_count] = new_value
+                        else:
+                            print_error("Bad value specified.")
+                    return proc
 
-            def __edit_word_count(letter_count):
-                def proc():
-                    nonlocal score_per_letter_count
-                    new_value = dialog.input(f"Choose how much score given for {letter_count}-letter words if typed correctly.\n \nCurrent: {score_per_letter_count[letter_count]}")
-                    new_value = safeint(new_value)
-                    if new_value:
-                        score_per_letter_count[letter_count] = new_value
+                procedures_list = [
+                    procedures.defproc(0, "Go Back", None)
+                ]
+
+                item = 1
+                for k in __get_setting(key).keys():
+                    procedures_list.append(procedures.defproc(item, f"{k}-letter words", __edit_for_letter_count(k)))
+                    item += 1
+
+                status_footer = None
+                while True:
+                    status_code, option, _ = procedures.ask_procedure(title, "?",
+                                                            procedures_list,
+                                                            after_header="Choose the letter count",
+                                                            status_footer=status_footer)
+
+                    if status_code != STATUS_SUCCESS:
+                        status_footer = "Invalid option."
+                        continue
                     else:
-                        print_error("Bad score specified.")
-                return proc
+                        status_footer = None
+        
+                    if option == 0:  # exit option
+                        break
 
-            procedures_list = [
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            item = 1
-            for key in word_count_per_letter_count.keys():
-                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
-                item += 1
-
-            status_footer = None
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Score per letter count", "?",
-                                                        procedures_list,
-                                                        after_header="Choose the letter count",
-                                                        status_footer=status_footer)
-
-                if status_code != STATUS_SUCCESS:
-                    status_footer = "Invalid option."
-                    continue
-                else:
-                    status_footer = None
-    
-                if option == 0:  # exit option
-                    break
-
-                procedures.do_execute_procedure(procedures_list, option)
-
-
-        def __opt_word_counts():
-            nonlocal word_count_per_letter_count
-
-            def __edit_word_count(letter_count):
-                def proc():
-                    nonlocal word_count_per_letter_count
-                    new_value = dialog.input(f"Choose how many words for {letter_count}-letter words to appear.\n \nCurrent: {word_count_per_letter_count[letter_count]}")
-                    new_value = safeint(new_value)
-                    if new_value:
-                        word_count_per_letter_count[letter_count] = new_value
-                    else:
-                        print_error("Bad word count specified.")
-                return proc
-
-            procedures_list = [
-                procedures.defproc(0, "Go Back", None)
-            ]
-
-            item = 1
-            for key in word_count_per_letter_count.keys():
-                procedures_list.append(procedures.defproc(item, f"{key}-letter words", __edit_word_count(key)))
-                item += 1
-
-            status_footer = None
-            while True:
-                status_code, option, _ = procedures.ask_procedure("Word counts", "?",
-                                                        procedures_list,
-                                                        after_header="Choose the letter count",
-                                                        status_footer=status_footer)
-
-                if status_code != STATUS_SUCCESS:
-                    status_footer = "Invalid option."
-                    continue
-                else:
-                    status_footer = None
-    
-                if option == 0:  # exit option
-                    break
-
-                procedures.do_execute_procedure(procedures_list, option)
+                    procedures.do_execute_procedure(procedures_list, option)
+            return proc
 
         procedures_list = [
-            procedures.defproc(1, "Words shuffled randomly", __opt_words_shuffled_randomly),
-            procedures.defproc(2, "Show words in advance", __opt_show_words_in_advance),
+            procedures.defproc(1, "Words shuffled randomly", boolean_setting("words_in_random", "Words shuffled randomly", "Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.")),
+            procedures.defproc(2, "Show words in advance", boolean_setting("show_words_in_advance", "Show words in advance", "Show next words that will be typed.")),
             procedures.defproc(3, "Letter counts", __opt_letter_counts),
-            procedures.defproc(4, "Word counts", __opt_word_counts),
-            procedures.defproc(5, "Score per letter count", __opt_score_per_letter_count),
+            procedures.defproc(4, "Word counts", letter_setting("word_count_per_letter_count", "Word counts", "Choose the number of times these number of words appear in a game.")),
+            procedures.defproc(5, "Score per letter count", letter_setting("score_per_letter_count", "Score per letter count", "Choose how much score given for these number of words if typed correctly")),
             procedures.defproc(0, "Exit", None)
         ]
 
