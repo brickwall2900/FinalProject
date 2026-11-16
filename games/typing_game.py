@@ -374,7 +374,7 @@ def typing_game():
         ]
         for i in range(len(real_leaderboard)):
             entry = real_leaderboard[i]
-            procedure_list.append(procedures.defproc(i + 1, f"{entry[0]}, {entry[2] if entry[2] is not None else "Unknown"} pts, {entry[1] if entry[2] is not None else "Unknown":.2f} secs",
+            procedure_list.append(procedures.defproc(i + 1, f"{entry[0]}, {entry[2] if entry[2] is not None else "Unknown"} pts, {entry[1] if entry[1] is not None else "Unknown":.2f} secs",
                                                      lambda entry=entry: __view_score_table(entry[1], entry[2], __parse_serialized_judgement_table(entry[3]), entry[0])))
 
         status_footer = None
