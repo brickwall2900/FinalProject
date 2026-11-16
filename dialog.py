@@ -23,7 +23,7 @@ def alert(message,
         _, option, _ = procedures.ask_procedure(title,
                                              "!",
                                              procedure_list,
-                                             after_header=message,
+                                             after_header=str(message),
                                              status_footer=status_footer,
                                              prompt=prompt)
         if procedure_list is not None and procedures.find_procedure(procedure_list, option):
