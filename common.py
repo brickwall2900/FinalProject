@@ -97,6 +97,18 @@ def str_to_bool(given):
 
     return given.strip().lower() == "true"
 
+# Returns the number of digits in a number
+def get_digits(number):
+    digit_count = 0
+    while True:
+        quotient = number // 10
+        if quotient is not 0:
+            digit_count += 1
+        else:
+            break
+        number = quotient
+    return digit_count + 1
+
 SUICIDAL = str_to_bool(os.environ.get("SUICIDAL", "False"))
 
 # Prints an error on the screen with a distinct text color of red.
