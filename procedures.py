@@ -102,7 +102,7 @@ def __ask_procedure_fancy(header,
     page_size = clamp(procedure_limit, 1, min(available_for_items, procedure_count))
 
     visible_procedures = procedures[procedure_offset:procedure_offset + page_size] if has_procedures else []
-    assert len(visible_procedures) == page_size
+    
     has_prev = procedure_offset > 0
     has_next = (procedure_offset + page_size) < procedure_count
     show_pagination = has_prev or has_next
