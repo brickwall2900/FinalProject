@@ -27,10 +27,10 @@ def __ask_procedure_basic(header,
     page_size = max(1, procedure_limit)
     
     if header is not None:
-        print(f"{separator_char * 5} {header} {separator_char * 5}")
+        print(ansi.get_raw_string(f"{separator_char * 5} {header} {separator_char * 5}"))
 
     if after_header is not None:
-        print(after_header)
+        print(ansi.get_raw_string(after_header))
         print()
 
     # calculate page
@@ -45,7 +45,7 @@ def __ask_procedure_basic(header,
             return STATUS_SUCCESS, 0, None # FIXME: what to do?
 
         for procedure in visible_procedures:
-            print(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}")
+            print(ansi.get_raw_string(f"[{str(procedure[INDEX_OPTION])}] {procedure[INDEX_NAME]}"))
 
         if show_pagination:
             print()
@@ -55,10 +55,10 @@ def __ask_procedure_basic(header,
             print("[Q] Prev page...")
 
     if status_footer is not None:
-            print(status_footer)
+            print(ansi.get_raw_string(status_footer))
             print()
 
-    raw_option = input(prompt)
+    raw_option = input(ansi.get_raw_string(prompt))
     option = safeint(raw_option)
 
     if option is None and has_procedures:
@@ -91,17 +91,18 @@ def __ask_procedure_fancy(header,
     procedure_offset = clamp(procedure_offset, 0, procedure_count)
 
     # i swear to the almighty being that i wrote this on hand 
-    safe_height = max(10, height - 10)
+    safe_height = max(5, height - 5)
     _, after_header_line_count = terminal.get_wrap_lines(after_header or "", max_width=max_width, word_wrap=True)
     _, status_footer_line_count = terminal.get_wrap_lines(status_footer or "", max_width=max_width, word_wrap=True)
     footer_border_lines = (1 + status_footer_line_count) if status_footer is not None else 0
 
     # 6 because top border + separator + prompt + bottom border + empty spaces
     # 3 for pagination options (next, prev, empty space)
-    available_for_items = max(1, safe_height - 6 - after_header_line_count - footer_border_lines - 3)
-    page_size = max(1, min(procedure_limit, available_for_items))
+    available_for_items = max(1, safe_height - 6 - after_header_line_count - footer_border_lines)
+    page_size = clamp(procedure_limit, 1, min(available_for_items, procedure_count))
 
     visible_procedures = procedures[procedure_offset:procedure_offset + page_size] if has_procedures else []
+    assert len(visible_procedures) == page_size
     has_prev = procedure_offset > 0
     has_next = (procedure_offset + page_size) < procedure_count
     show_pagination = has_prev or has_next
@@ -163,6 +164,10 @@ def __ask_procedure_fancy(header,
 
     terminal.tgfx_print_text(border, pos_x, procedure_y + 1)
     terminal.put_cursor_to(pos_x, procedure_y)
+
+    if not terminal.tgfx_warn_no_space(max_width, required_height=procedure_y):
+        input()
+        return STATUS_OUT_OF_BOUNDS, 0, None
 
     raw_option = input(prompt)
     option = safeint(raw_option)

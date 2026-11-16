@@ -1,6 +1,6 @@
 import os
 
-from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS
+from status import STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_NULL_POINTER
 
 ESCAPE_CHARACTER = "\u001b"
 ESCAPE_SEQUENCE = ESCAPE_CHARACTER + "["
@@ -180,6 +180,20 @@ def tgfx_print_text(text: str, x, y, max_width=None, word_wrap=False):
             pos_y += 1
 
     return STATUS_SUCCESS
+
+def tgfx_warn_no_space(required_width, required_height=None):
+    has_screen_space_estate = int(required_width) < get_width() - 1
+    if required_height is not None:
+        has_screen_space_estate = has_screen_space_estate and int(required_height) < get_height() - 1
+
+    if not has_screen_space_estate:
+        import ansi
+        erase_whole_screen()
+        tgfx_print_text(ansi.bgcolor(ansi.fgcolor("Your terminal does not have more screen space" \
+        " estate to draw the elements on screen correctly. Please resize the terminal " \
+        "and refresh the screen buffer.", COLOR_WHITE), COLOR_RED), 0, 0)
+
+    return has_screen_space_estate
 
 # Converts a string to a boolean
 # put here cuz importing common would cause a circular dependency
