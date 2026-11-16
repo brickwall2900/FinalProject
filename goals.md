@@ -1,14 +1,14 @@
 # Project Goals
 
-- [ ] base game
+- [x] base game
     - [x] typing game
-    - [ ] tutorial
+    - [x] tutorial
     - [x] leaderboard
     - [x] save/load
-- [ ] profiles
+- ~~[ ] profiles~~
 - [ ] candy crush
 - [ ] wordle
 - [ ] minesweeper
 - [ ] sudoku
 - [ ] petdoku
-- [ ] windows ANSI detection
+- [?] windows ANSI detection
