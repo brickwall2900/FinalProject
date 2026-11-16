@@ -2,7 +2,6 @@ import os
 
 from status import STATUS_ALREADY_EXISTS, STATUS_FILE_NOT_FOUND, STATUS_SUCCESS
 
-BUFFER_SIZE = 4096 * 4
 WORD_BANK_FILEPATH_DEFAULT = os.path.join("data", "english3.txt")
 
 words = []
