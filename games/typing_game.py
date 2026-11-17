@@ -323,9 +323,10 @@ def typing_game():
         status_code, leaderboard = persistence.load_persistence("leaderboard-typing_game")
         if status_code == STATUS_SUCCESS and leaderboard is not None:
             nextEntry = safeint(leaderboard.get("NextEntry", "1")) or 1
+            nextEntry += 1
 
+            leaderboard["NextEntry"] = str(nextEntry)
             leaderboard[f"Entry{nextEntry}"] = new_entry
-            leaderboard["NextEntry"] = str(nextEntry + 1)
         else:
             leaderboard = {}
             leaderboard["NextEntry"] = 1
