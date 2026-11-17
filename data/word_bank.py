@@ -41,3 +41,6 @@ def try_loading_words(word_bank_filepath = WORD_BANK_FILEPATH_DEFAULT):
     loaded = True
 
     return STATUS_SUCCESS, word_count
+
+def get_words_with_letter_count(letter_count):
+    return [word for word in words if len(word) == letter_count]

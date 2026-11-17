@@ -138,7 +138,7 @@ def typing_game():
     # picks random words with a criteria, that `count`
     # words will be given with `letter_count` letters in it from the word bank.
     def __pick_words(count, letter_count):
-        letter_count_words = [word for word in word_bank.words if len(word) == letter_count]
+        letter_count_words = word_bank.get_words_with_letter_count(letter_count)
 
         if len(letter_count_words) < count:
             return STATUS_UNDERPOPULATED, None
