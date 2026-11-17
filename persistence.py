@@ -32,7 +32,7 @@ def load_persistence(name):
 def save_persistence(name, data):
     has_persistence_dir = ensure_persistence_dir_exists()
     if not has_persistence_dir:
-        return STATUS_ALREADY_EXISTS, None
+        return STATUS_ALREADY_EXISTS
 
     path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
 
@@ -44,5 +44,6 @@ def save_persistence(name, data):
         status_code, serialized = parser.serialize(data)
         if status_code == STATUS_SUCCESS and serialized is not None:
             file.write(serialized)
+            return STATUS_SUCCESS
         else:
-            return status_code, None
+            return status_code
