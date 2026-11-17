@@ -8,7 +8,7 @@
 - ~~[ ] profiles~~
 - [ ] candy crush
 - [ ] wordle
-- [ ] minesweeper
+- [x] minesweeper
 - [ ] sudoku
 - [ ] petdoku
 - [?] windows ANSI detection
