@@ -35,18 +35,12 @@ def reset_cursor_to_top_left():
     print(ESCAPE_SEQUENCE + "H", end="")
 
 def erase_whole_screen():
-    if not use_advanced_terminal_graphics:
-        return
     print(ESCAPE_SEQUENCE + "2J", end="")
 
 def put_cursor_to(x, y):
-    if not use_advanced_terminal_graphics:
-        return
     print(ESCAPE_SEQUENCE + f"{int(y)};{int(x)}H", end="")
 
 def reset_graphics():
-    if not use_advanced_terminal_graphics:
-        return
     print(ESCAPE_RESET_GRAPHICS, end="")
 
 def flush():

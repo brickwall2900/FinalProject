@@ -100,6 +100,9 @@ def toggle_advanced_tgfx():
 
     settings["AdvancedTerminalGfx"] = str(not terminal.use_advanced_terminal_graphics)
     terminal.use_advanced_terminal_graphics = str_to_bool(settings["AdvancedTerminalGfx"])
+    if not terminal.use_advanced_terminal_graphics: # try if it even works lol
+        terminal.erase_whole_screen()
+        terminal.put_cursor_to(0, 0)
     persistence.save_persistence("core", settings)
 
     print("\nToggled and changes saved!\n")
@@ -129,8 +132,9 @@ def loop():
             break
 
 def destroy():
-    terminal.erase_whole_screen()
-    terminal.reset_cursor_to_top_left()
+    if terminal.use_advanced_terminal_graphics:
+        terminal.erase_whole_screen()
+        terminal.reset_cursor_to_top_left()
     print("Goodbye!")
     exit()
 
