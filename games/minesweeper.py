@@ -558,6 +558,8 @@ def minesweeper():
             game_context["dirty"] = True
 
     def __win():
+        persistence.remove_persistence("minesweeper")
+
         procedures_list = [
             procedures.defproc(1, "Submit to Leaderboard", __save_to_leaderboard),
             procedures.defproc(0, "Exit", None)
