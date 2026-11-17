@@ -79,13 +79,13 @@ def minesweeper():
                     "f<r><c> - toggle flag at <row> <column>", "Minesweeper")
 
         dialog.alert("IMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\n \n" \
-                    "s<r><c> - check mines at a 3x3 radius from the center at <row><column>;" \
+                    "s<r><c> - check mines at a 3x3 radius from the center at <row><column>; " \
                     "if not on adjacent mine, does nothing;\n \n" \
-                    "if on adjacent mine, checks if you've flagged the exact number of adjacent mines then" \
+                    "if on adjacent mine, checks if you've flagged the exact number of adjacent mines then " \
                     "checks the not flagged ones.")
 
         dialog.alert("You LOSE if you check a tile that is a mine.\n"\
-                     "You WIN if you flag all tiles that is a mine.\n \n"\
+                     "You WIN if you check all tiles that is not a mine.\n \n"\
                      "You can read countless tutorials on how to play Minesweeper out there. Good luck and don't die! >:)", "Minesweeper")
 
     def __choose_difficulty():
@@ -296,6 +296,7 @@ def minesweeper():
                                 board_value = ansi.fgcolor(str(board_raw), terminal.COLOR_YELLOW)
                             terminal.tgfx_print_text(board_value, x + board_x, y + board_y)
         else:
+            game_visual_height -= 1
             for y in range(game_visual_height):
                 if y == 0: # title
                     print("Minesweeper")
@@ -322,7 +323,7 @@ def minesweeper():
                         elif x > 1:
                             board_value = "?"
                             board = game_context["board"]
-                            board_index = (y-4) * game_width + (x-2)
+                            board_index = (y-3) * game_width + (x-2)
                             board_raw = board[board_index]
                             if board_raw == TILE_UNKNOWN:
                                 board_value = "."
@@ -337,8 +338,8 @@ def minesweeper():
                             print(board_value, end="")
                         else:
                             print(" ", end="")
-                    else:
-                        print(" ", end="")    
+                    # else:
+                        # print(" ", end="")    
                 print("")
 
     REAL_TO_COORDINATE_VALUES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
