@@ -295,6 +295,51 @@ def minesweeper():
                             elif 0 <= board_raw and board_raw <= 10:
                                 board_value = ansi.fgcolor(str(board_raw), terminal.COLOR_YELLOW)
                             terminal.tgfx_print_text(board_value, x + board_x, y + board_y)
+        else:
+            for y in range(game_visual_height):
+                if y == 0: # title
+                    print("Minesweeper")
+                    continue
+                elif y == 1 or y == game_visual_height - 1: # border
+                    print("=" * game_visual_width)
+                    continue
+                elif y == game_visual_height - 2: # bottom space
+                    print(" ", end="")
+                    continue
+                # else:
+                #     print(" ", end="")
+                for x in range(game_visual_width):
+                    if y == 2:
+                        if x >= 2:
+                            print(__to_coordinate_numbers(x - 2), end="")
+                        elif x == 1:
+                            print("c", end="")
+                        elif x == 0:
+                            print("r", end="")
+                    elif y > 2:
+                        if x == 0:
+                            print(__to_coordinate_numbers(y - 3), end="")
+                        elif x > 1:
+                            board_value = "?"
+                            board = game_context["board"]
+                            board_index = (y-4) * game_width + (x-2)
+                            board_raw = board[board_index]
+                            if board_raw == TILE_UNKNOWN:
+                                board_value = "."
+                            elif board_raw == TILE_MINE:
+                                board_value = "X"
+                            elif board_raw == TILE_FLAG:
+                                board_value = "P"
+                            elif board_raw == TILE_CLEAR:
+                                board_value = " "
+                            elif 0 <= board_raw and board_raw <= 10:
+                                board_value = str(board_raw)
+                            print(board_value, end="")
+                        else:
+                            print(" ", end="")
+                    else:
+                        print(" ", end="")    
+                print("")
 
     REAL_TO_COORDINATE_VALUES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
                                  "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
@@ -354,6 +399,25 @@ def minesweeper():
             text_y += puts("  * /exit", text_x, text_y)
             text_y += puts("  closes the game", text_x, text_y)
             text_y += puts("Command: ", text_x, text_y)
+            command = input()
+            __process_command(command)
+        else:
+            print("TIME :")
+            print(f"{game_context["time"]:.2f} secs")
+            print(" ")
+            print("FLAGS:")
+            print(f" {game_context["flag_count"] if game_context["flag_count"] is not None else "???"} flags")
+            print(" ")
+            print("Commands:")
+            print("  * x<r><c>")
+            print("  checks for a mine")
+            print("  * f<r><c>")
+            print("  puts down a flag")
+            print("  * s<r><c>")
+            print("  checks for mines in 3x3 area iff adj tiles are OK (flagged)")
+            print("  * /exit")
+            print("  closes the game")
+            print("Command: ", end="")
             command = input()
             __process_command(command)
 
