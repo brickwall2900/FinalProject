@@ -47,3 +47,16 @@ def save_persistence(name, data):
             return STATUS_SUCCESS
         else:
             return status_code
+
+def remove_persistence(name):
+    has_persistence_dir = ensure_persistence_dir_exists()
+    if not has_persistence_dir:
+        return STATUS_ALREADY_EXISTS
+
+    path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
+
+    if not os.path.exists(path):
+        return STATUS_NULL_POINTER
+
+    os.remove(path)
+    return STATUS_SUCCESS
