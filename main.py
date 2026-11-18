@@ -2,59 +2,8 @@ import os
 import random
 import time
 
-import dialog
-import ansi
-import terminal
 import persistence
 from common import print_error, str_to_bool
-
-import procedures
-from games.typing_game import typing_game
-from games.minesweeper import minesweeper
-from games.wordle import wordle
-from games.last_letter import last_letter
-from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_NEXT, STATUS_PREVIOUS
-
-
-def init():
-    # print(ansi.to_ansi_tokens(ansi.bold(ansi.fgcolor("Hello", terminal.COLOR_BLUE))))
-    # input()
-    # width = terminal.get_width()
-    # height = terminal.get_height()
-    # status = terminal.tgfx_draw_rect((width / 2) - 5, (height / 2) - 10, 10, 20)
-    # print(STATUS_CODE_TO_STRING_TABLE[status])
-    # terminal.tgfx_print_text("the quick brown fox jumped over the lazy dog!", (width / 2) - 5 + 2, (height / 2), 6)
-    # print(STATUS_CODE_TO_STRING_TABLE[status])
-
-    # procedure_list = [
-    #     procedures.defproc(0, "Exit", None)
-    # ]
-    # for i in range(1, 100):
-    #     procedure_list.append(procedures.defproc(i, f"spam{i}", None))
-
-    # before_header = None
-    # offset = 0
-    # while True:
-    #     status_code, option = procedures.ask_procedure(" ++ Game Selection ++ ",
-    #                                                                   "..", procedure_list,
-    #                                                                   status_footer=before_header,
-    #                                                                   procedure_offset=offset,
-    #                                                                   procedure_limit=5)
-    #     terminal.put_cursor_to(0, 20)
-    #     print(STATUS_CODE_TO_STRING_TABLE[status_code])
-    #     if option is None:
-    #         continue
-    #     if status_code == STATUS_NEXT:
-    #         offset += option
-    #     elif status_code == STATUS_PREVIOUS:
-    #         offset -= option
-
-    # dialog.alert("Hello!", "Dialog", None)
-
-    do_first_time_terminal_init()
-
-    if not terminal.use_advanced_terminal_graphics:
-        print("Fancy terminal graphics are disabled!")
 
 def do_first_time_terminal_init():
     status_code, settings = persistence.load_persistence("core")

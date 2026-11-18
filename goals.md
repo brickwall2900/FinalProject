@@ -15,7 +15,7 @@
 
 # Simplification
 - [ ] Remove status.py
-    - [ ] Rely on if-conditions to defensive programming
+    - [ ] Rely on if-conditions fo defensive programming
 - [ ] Remove terminal.py
 - [ ] Remove ansi.py
 - [ ] Remove procedures.py
@@ -25,6 +25,16 @@
 - [ ] Inline print() replacing tgfx_...
 - [ ] Replace double quote f-strings with single quotes
 - [ ] Remove global variables
+    - [ ] Everything should be pass by-context or by-parameter
 - [ ] Remove inner functions / lambda functions
+- [ ] Simplify every fucking function
+    - [ ] main.py
+    - [ ] parser.py
+    - [ ] persistence.py
+    - [ ] typing_game.py
+    - [ ] minesweeper.py
+    - [ ] last_letter.py
+
+By 12 AM, everything should be up and working
 
 i have to rewrite my fucking mental model to simplify code
