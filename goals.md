@@ -14,31 +14,35 @@
 - [?] windows ANSI detection
 
 # Simplification
-- [ ] Remove status.py
+- [x] Remove status.py
     - [ ] Rely on if-conditions fo defensive programming
-- [ ] Remove terminal.py
-- [ ] Remove ansi.py
-- [ ] Remove procedures.py
-    - [ ] Remove dialog.py
-- [ ] Remove common::shuffle
-- [ ] Remove common::pick_randomly
+- [x] Remove terminal.py
+- [x] Remove ansi.py
+- [x] Remove procedures.py
+    - [x] Remove dialog.py
+- [x] Remove common::shuffle
+- [x] Remove common::pick_randomly
 - [ ] Inline print() replacing tgfx_...
 - [ ] Replace double quote f-strings with single quotes
-- [ ] Remove global variables
-    - [ ] Everything should be pass by-context or by-parameter
+- [x] Remove global variables
+    - [x] Everything should be pass by-context or by-parameter
 - [ ] Remove inner functions / lambda functions
+- [ ] No usage of functions as a variable (functions first-class)
 - [ ] Simplify every fucking function and imports
-    - [ ] main.py
-    - [ ] parser.py
-    - [ ] persistence.py
+    - [x] main.py
+    - [x] parser.py
+    - [x] persistence.py
     - [ ] typing_game.py
     - [ ] minesweeper.py
     - [ ] last_letter.py
 
 By 12 AM, everything should be up and working
+
+# Arbitrary Rules That I Hopefully Won't Fucking Break
 - Max number of local imports is 2
 - Max number of builtin imports is (os, time, random)
 - Max number of branching nests is 3
-- Max number of 
+- Max number of functions in one file is 10
+- Functions exceeding 50 lines are not allowed
 
 i have to rewrite my fucking mental model to simplify code
