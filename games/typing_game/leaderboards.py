@@ -187,6 +187,7 @@ def view_score_table(judgement_table, name=None):
         if show_next:
             print(" - [W]: Next")
         print(" - [0]: Exit")
+        print(message)
         raw_chosen = input("> ").lower().strip()
         chosen = safeint(raw_chosen)
         message = ""
