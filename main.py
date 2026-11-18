@@ -4,7 +4,7 @@ import data.word_bank as word_bank
 import data.motd as motd
 from common import print_error
 
-from games.typing_game import call as typing_game
+from games.typing_game.main import call as typing_game
 
 def preload_stuff(ctx):
     print("Preloading stuff...")
