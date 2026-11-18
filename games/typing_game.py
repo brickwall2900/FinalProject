@@ -171,7 +171,7 @@ def __edit_boolean_setting(settings, key, name, description):
         print("[.] Left as it is.")
 
 def __edit_letter_count_subsetting(settings, key, prompt, error_condition_message):
-    letter_count = safeint(input("How many letters to change word count? "))
+    letter_count = safeint(input("How many letters to change? "))
     if letter_count is None:
         return "[x] Invalid number of letters"
 
@@ -253,7 +253,7 @@ def __edit_letter_counts(settings):
             message = __edit_letter_count_subsetting(settings, "word_count_per_letter_count",
                                            "How many words should show up?", "Invalid number of words")
         elif chosen == 4:
-            message = __edit_letter_count_subsetting(settings, "word_count_per_letter_count",
+            message = __edit_letter_count_subsetting(settings, "score_per_letter_count",
                                             "How many points is the word worth?", "Invalid score number")
         else:
             print("Invalid option, try again.")
@@ -365,8 +365,8 @@ def __validate_invariants(settings):
     return True
 
 def __judge(correct_input_list, user_input_list, settings):
-    if len(correct_input_list) < len(user_input_list):
-        print_error("You did not type enough words to be judged. How?")
+    if len(correct_input_list) != len(user_input_list):
+        print_error("You did not type enough words or too much words to be judged. How?")
         return False, 0, []
 
     # list of tuples (correct_word, user_input_word, score)
