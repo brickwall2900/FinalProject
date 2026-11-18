@@ -3,36 +3,37 @@
 
 # on everything i finish this project on time lol
 
-from status import *
+# input (str) -> dict[key, value]
+def deserialize(serialized):
+    # type: (str) -> dict[str, object] | None
+    if serialized is None:
+        return None
 
-# input (str) -> dict[key]: value
-def deserialize(input):
-    if input is None:
-        return STATUS_NULL_POINTER, None
+    parsed = {} # type: dict[str, object]
 
-    # TODO: autocompletion, remove!
-    input = str(input)
-    parsed = {}
-
-    for line in input.splitlines():
+    for line in serialized.splitlines():
         equals_index = line.find("=")
+        # skip if = not found
         if equals_index == -1:
-            return STATUS_BAD_USER_INPUT, None
+            return None
 
         key = line[:equals_index]
         value = line[equals_index+1:]
         parsed[key] = value
 
-    return STATUS_SUCCESS, parsed
+    return parsed
 
 # input (dict[key]: value) -> str
 def serialize(data):
+    # type: (dict[str, object]) -> str | None
+    
+    # TODO: do we need this?
     # isinstance checks if the instance of `data` is of a given class
     if not isinstance(data, dict): # checks if data is a dict
-        return STATUS_BAD_USER_INPUT, None
+        return None
 
     serialized = ""
     for key in data.keys():
         serialized = serialized + f"{key}={data[key]}\n"
 
-    return STATUS_SUCCESS, serialized
+    return serialized

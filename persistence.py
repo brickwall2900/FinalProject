@@ -1,62 +1,46 @@
 import parser
-from status import *
 import os
 
-PERSISTENCE_FOLDER = os.path.join("persistence")
-
-def ensure_persistence_dir_exists():
-    if os.path.exists(PERSISTENCE_FOLDER):
-        if not os.path.isdir(PERSISTENCE_FOLDER):
-            return False
-        else:
-            return True
-    else:
-        os.mkdir(PERSISTENCE_FOLDER)
-
-    return True
-
 def load_persistence(name):
-    has_persistence_dir = ensure_persistence_dir_exists()
-    if not has_persistence_dir:
-        return STATUS_ALREADY_EXISTS, None
+    persistence_folder = os.path.join("persistence")
+    
+    if not os.path.exists(persistence_folder):
+        os.mkdir(persistence_folder)
 
-    path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
+    path = os.path.join(persistence_folder, name + ".properties")
 
     if os.path.exists(path):
         with open(path, "r") as file:
             serialized = file.read()
             return parser.deserialize(serialized)
     else:
-        return STATUS_FILE_NOT_FOUND, None
+        return None
 
+# returns True if successful
 def save_persistence(name, data):
-    has_persistence_dir = ensure_persistence_dir_exists()
-    if not has_persistence_dir:
-        return STATUS_ALREADY_EXISTS
+    persistence_folder = os.path.join("persistence")
+    
+    if not os.path.exists(persistence_folder):
+        os.mkdir(persistence_folder)
 
-    path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
+    path = os.path.join(persistence_folder, name + ".properties")
 
-    if not os.path.exists(path):
-        with open(path, "a") as _:
-            pass
-
-    with open(path, "w") as file:
-        status_code, serialized = parser.serialize(data)
-        if status_code == STATUS_SUCCESS and serialized is not None:
+    # open(path, "x") creates an empty file if doesn't exist and writes to it
+    with open(path, "x") as file:
+        serialized = parser.serialize(data)
+        if serialized is not None:
             file.write(serialized)
-            return STATUS_SUCCESS
+            return True
         else:
-            return status_code
+            return False
 
+# returns true if successful
 def remove_persistence(name):
-    has_persistence_dir = ensure_persistence_dir_exists()
-    if not has_persistence_dir:
-        return STATUS_ALREADY_EXISTS
+    persistence_folder = os.path.join("persistence")
+    if not os.path.exists(persistence_folder):
+        return
 
-    path = os.path.join(PERSISTENCE_FOLDER, (name + ".properties"))
+    path = os.path.join(persistence_folder, (name + ".properties"))
 
-    if not os.path.exists(path):
-        return STATUS_NULL_POINTER
-
-    os.remove(path)
-    return STATUS_SUCCESS
+    if os.path.exists(path):
+        os.remove(path)
