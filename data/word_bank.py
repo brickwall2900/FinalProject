@@ -7,7 +7,8 @@ def try_loading_words(word_bank_filepath):
     if not os.path.exists(word_bank_filepath):
         return None
 
-    words = []    print("Loading words...")
+    words = []    
+    print("Loading words...")
 
     with open(word_bank_filepath, "rt") as file:
         while True:
