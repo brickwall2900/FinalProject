@@ -1,5 +1,4 @@
 def string_compare(this, that):
-    # type: (str, str) -> int
     max_index = max(len(this), len(that))
     
     for index in range(max_index):

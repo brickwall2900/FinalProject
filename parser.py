@@ -5,12 +5,10 @@
 
 # input (str) -> dict[key, value]
 def deserialize(serialized):
-    # type: (str) -> dict[str, object] | None
     if serialized is None:
         return None
 
-    parsed = {} # type: dict[str, object]
-
+    parsed = {}
     for line in serialized.splitlines():
         equals_index = line.find("=")
         # skip if = not found
@@ -25,7 +23,6 @@ def deserialize(serialized):
 
 # input (dict[key]: value) -> str
 def serialize(data):
-    # type: (dict[str, object]) -> str | None
     
     # TODO: do we need this?
     # isinstance checks if the instance of `data` is of a given class
