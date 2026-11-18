@@ -1,7 +1,9 @@
 import random
 
-# safeint() functions equivalently like int(), but returns `None` on invalid input.
+
 def safeint(given, default=None):
+    '''safeint() functions equivalently like int(),
+    but returns `None` on invalid input.'''
     if str.isdigit(given) and str.isascii(given):
         return int(given)
     else:
@@ -24,7 +26,8 @@ def sort(the_list, comparator):
     for i in range(len(the_list)):
         min_value_idx = i
         for j in range(i + 1, len(the_list)):
-            if comparator(the_list[min_value_idx], the_list[j]) > 0: # this > that
+            # this > that
+            if comparator(the_list[min_value_idx], the_list[j]) > 0:
                 min_value_idx = j
         swap(the_list, i, min_value_idx)
 
@@ -59,7 +62,7 @@ def get_digits(number):
     digit_count = 0
     while True:
         quotient = number // 10
-        if quotient is not 0:
+        if quotient != 0:
             digit_count += 1
         else:
             break
