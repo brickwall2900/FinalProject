@@ -36,5 +36,9 @@
     - [ ] last_letter.py
 
 By 12 AM, everything should be up and working
+- Max number of local imports is 2
+- Max number of builtin imports is (os, time, random)
+- Max number of branching nests is 3
+- Max number of 
 
 i have to rewrite my fucking mental model to simplify code
