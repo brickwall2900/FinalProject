@@ -5,6 +5,7 @@ import data.motd as motd
 from common import print_error
 
 from games.typing_game.main import call as typing_game
+from games.minesweeper.main import call as minesweeper
 
 def preload_stuff(ctx):
     print("Preloading stuff...")
@@ -43,7 +44,7 @@ def main():
     print()
     
     greet(global_context)
-    typing_game(global_context)
+    minesweeper(global_context)
 
 
 if __name__ == "__main__":
