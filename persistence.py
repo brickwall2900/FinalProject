@@ -29,8 +29,12 @@ def save_persistence(name, data):
 
     path = os.path.join(persistence_folder, name + ".properties")
 
-    # open(path, "x") creates an empty file if doesn't exist and writes to it
-    with open(path, "x") as file:
+    # open(path, "x") creates an empty file and if the file already exists, don't error out
+    if os.path.exists(path):
+        with open(path, "a") as file:
+            pass
+
+    with open(path, "w") as file:
         serialized = parser.serialize(data)
         if serialized is not None:
             file.write(serialized)
