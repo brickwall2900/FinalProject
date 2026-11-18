@@ -37,6 +37,7 @@
     - [ ] last_letter.py
 
 By 12 AM, everything should be up and working
+- 3:38 AM; It is past 12 and everything is still not fucking working.
 
 # Arbitrary Rules That I Hopefully Won't Fucking Break
 - Max number of local imports is 2
