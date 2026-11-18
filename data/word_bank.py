@@ -1,21 +1,13 @@
 import os
 import random
 
-from common import sort
-from comparators import string_compare
-
 def try_loading_words(word_bank_filepath):
-    # type: (str) -> list[str] | None
     ''' Try loading words from the word bank file and return a list of words. '''
-    
-    if word_bank_filepath is None:
-        word_bank_filepath = os.path.join("data", "english3.txt")
 
     if not os.path.exists(word_bank_filepath):
         return None
 
-    words = [] # type: list[str]
-    print("Loading words...")
+    words = []    print("Loading words...")
 
     with open(word_bank_filepath, "rt") as file:
         while True:
@@ -30,29 +22,22 @@ def try_loading_words(word_bank_filepath):
             line = line.split(None)
 
             words.extend(line)
-            
-    print("Now sorting word list")
-    
-    sort(words, string_compare)
     
     print(f"{len(words)} words loaded successfully!")
 
     return words
 
 def get_words_with_letter_count(words, letter_count):
-    # type: (list[str], int) -> list[str]
     ''' Get a list of words with the specified letter count. '''
     
     return [word for word in words if len(word) == letter_count]
 
 def get_random_word(words):
-    # type: (list[str]) -> str
     ''' Get a random word from the word bank. '''
     return random.choice(words)
 
 # TODO: replace with binary search
 def can_word_be_found(words, text):
-    # type: (list[str], str) -> bool
     '''
     Tests if the word can be found in the word bank. Case-insensitive.
     The word list must be sorted beforehand.
