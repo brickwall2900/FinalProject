@@ -11,6 +11,8 @@ from common import print_error, str_to_bool
 import procedures
 from games.typing_game import typing_game
 from games.minesweeper import minesweeper
+from games.wordle import wordle
+from games.last_letter import last_letter
 from status import STATUS_CODE_TO_STRING_TABLE, STATUS_SUCCESS, STATUS_OUT_OF_BOUNDS, STATUS_NEXT, STATUS_PREVIOUS
 
 
@@ -111,6 +113,7 @@ def loop():
     procedure_list = [
         procedures.defproc(1, "Typing Game", game_procedure(typing_game)),
         procedures.defproc(2, "Minesweeper", game_procedure(minesweeper)),
+        procedures.defproc(3, "Last Letter", game_procedure(last_letter)),
         procedures.defproc(6, "Advanced Terminal Graphics", toggle_advanced_tgfx),
         procedures.defproc(0, "Exit", None)
     ]

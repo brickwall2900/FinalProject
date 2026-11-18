@@ -1,4 +1,5 @@
 import os
+import common
 
 from status import STATUS_ALREADY_EXISTS, STATUS_FILE_NOT_FOUND, STATUS_SUCCESS
 
@@ -42,5 +43,23 @@ def try_loading_words(word_bank_filepath = WORD_BANK_FILEPATH_DEFAULT):
 
     return STATUS_SUCCESS, word_count
 
+# Get a list of words with the specified letter count.
 def get_words_with_letter_count(letter_count):
     return [word for word in words if len(word) == letter_count]
+
+# Get a random word from the word bank
+def get_random_word():
+    return common.pick_randomly(words)
+
+# Tests if the word can be found in the word bank. Case-insensitive.
+# TODO: sort wordbank an d replace with binary search
+def can_word_be_found(text):
+    if text is None:
+        return False
+
+    text = text.strip().lower()
+    for word in words:
+        if text == word.lower():
+            return True
+
+    return False

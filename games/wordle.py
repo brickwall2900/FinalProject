@@ -31,8 +31,8 @@ def wordle():
 
     def run():
         procedures_list = [
-            procedures.defproc(1, "Start", game),
-            procedures.defproc(2, "Daily Game", game),
+            procedures.defproc(1, "Start", None),
+            procedures.defproc(2, "Daily Game", None),
             procedures.defproc(4, "About", __about),
             procedures.defproc(0, "Exit", None)
         ]
@@ -64,10 +64,14 @@ def wordle():
                 break
         pass
     
+    def __about():
+        dialog.alert("Hi")
 
     # defines one instance of a wordle game
     def __wordle_game(letter_count, guesses):
-        pass
+        status_code, word = __pick_word(letter_count, guesses)
+        board = [] # list of tuples?
+        
 
     # picks a wordle word
     # - must be guessable
@@ -86,7 +90,7 @@ def wordle():
         while len(letter_count_words) > 0:
             chosen_word = letter_count_words.pop()
             # then we check if the word is guessable; aka find a set of words that could solve the wordle
-            if __check_word_bank_if_guessable(letter_count, chosen_word, copy_words, guesses):
+            if __check_word_bank_if_guessable(chosen_word, copy_words):
                 the_final_chosen_word = chosen_word
                 break
 
@@ -98,8 +102,31 @@ def wordle():
 
 
     # checks the word bank if the word is guessable by the word bank alone
-    def __check_word_bank_if_guessable(letter_count, the_word, other_words, guesses):
-        
+    def __check_word_bank_if_guessable(the_word, other_words):
+        # okay...
+        # decompose the word into a set of letters
+        available_letters = [x for x in the_word]
+        can_guess = {}
+        for l in available_letters:
+            can_guess[l] = False # keys in dict already deduplicate themselves
+
+        # problem, can_guess dict values should be all true for the word
+        # to be considered guessable
+        for letter in can_guess.keys():
+            # check for other_words
+            for candidate_word in other_words:
+                if candidate_word is the_word:
+                    continue
+                other_available_letters = [x for x in candidate_word]
+                if letter in other_available_letters:
+                    can_guess[letter] = True
+
+        can_guess_all = True
+        for letter in can_guess.keys():
+            can_guess_all = can_guess_all and can_guess[letter]
+
+        return can_guess_all
+
 
     def destroy():
         pass

@@ -61,6 +61,8 @@ def get_height():
         return DEFAULT_HEIGHT
 
 def get_string_visual_width(text: str) -> int:
+    import ansi
+    text = ansi.get_raw_string(text)
     width = 0
     for c in text:
         if c.isascii() and c.isprintable():

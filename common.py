@@ -83,9 +83,22 @@ def shuffle(the_list):
         new_index = random.randint(0, size)
         swap(the_list, i, new_index)
 
+# Picks a random item from the list
+def pick_randomly(the_list):
+    size = len(the_list)
+    return the_list[random.randint(0, size-1)]
+
 # Forces a number to be within in range of [min, max].
 def clamp(given, n_min, n_max):
     return max(min(given, n_max), n_min)
+
+# Generates a random boolean True or False
+def randbool():
+    return random.randint(0, 1) == 1
+
+# linear interpolation
+def lerp(a, b, t):
+    return a + (b - a) * t
 
 # Converts a string to a boolean
 def str_to_bool(given):
