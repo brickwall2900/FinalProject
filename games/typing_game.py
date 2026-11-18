@@ -51,7 +51,7 @@ def __parse_settings(settings_loaded):
     parsed_settings["show_words_in_advance"] = str_to_bool(settings_loaded.get("show_words_in_advance", "False"))
 
     # spliti setting by , and type casts into an int
-    letter_count_to_include = [safeint(letter) for letter in settings_loaded.get("show_words_in_advance", "").split(",")]
+    letter_count_to_include = [safeint(letter) for letter in settings_loaded.get("letter_count_to_include", "").split(",")]
     # remove None elements
     letter_count_to_include = [x for x in letter_count_to_include if x is not None]
 
@@ -66,6 +66,9 @@ def __parse_settings(settings_loaded):
     for letters in letter_count_to_include:
         word_count_per_letter_count[letters] = safeint(settings_loaded.get(f"word_count_per_letter_count_{letters}"), 5)
         score_per_letter_count[letters] = safeint(settings_loaded.get(f"score_per_letter_count_{letters}"), 5)
+
+    parsed_settings["word_count_per_letter_count"] = word_count_per_letter_count
+    parsed_settings["score_per_letter_count"] = score_per_letter_count
 
     return parsed_settings
 
@@ -88,6 +91,7 @@ def run(g_ctx):
     typing_game_ctx = g_ctx["typing_game"]
     words = g_ctx["words"]
 
+    message = ""
     while True:
         print(" ~~~ The Typing Game ~~~")
         print("The Typing Game tests your typing skills by you typing words with speed and accuracy!")
@@ -97,10 +101,13 @@ def run(g_ctx):
         print(" - [4]: About")
         print()
         print(" - [0]: Exit")
+        print(message)
         chosen = safeint(input("> "))
+
+        message = ""
         
         if chosen is None:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
             continue
         
         if chosen == 1:
@@ -115,9 +122,10 @@ def run(g_ctx):
         elif chosen == 0:
             break
         else:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
     
 def __settings(settings):
+    message = ""
     while True:
         print(" *** Settings ***")
         print(" - [1]: Words shuffled randomly")
@@ -125,11 +133,14 @@ def __settings(settings):
         print(" - [3]: Letter counts")
         print()
         print(" - [0]: Exit")
+        print(message)
         chosen = safeint(input("> "))
         
         if chosen is None:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
             continue
+
+        message = ""
         
         if chosen == 1:
             __edit_boolean_setting(settings, "words_in_random", "Words shuffled randomly", "Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.")
@@ -140,7 +151,7 @@ def __settings(settings):
         elif chosen == 0:
             break
         else:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
 
 def __edit_boolean_setting(settings, key, name, description):
     print("[!] ", end="")
@@ -159,9 +170,25 @@ def __edit_boolean_setting(settings, key, name, description):
     else:
         print("[.] Left as it is.")
 
+def __edit_letter_count_subsetting(settings, key, prompt, error_condition_message):
+    letter_count = safeint(input("How many letters to change word count? "))
+    if letter_count is None:
+        return "[x] Invalid number of letters"
+
+    if find(settings.get("letter_count_to_include", []), letter_count) is None:
+        return "[x] Letter count not included"
+
+    prop_value = safeint(input(prompt))
+    if prop_value is None:
+        return "[x] " + error_condition_message
+
+    settings[key][letter_count] = prop_value
+    return ""
+
 # this function went every restriction i had
 def __edit_letter_counts(settings):
     letter_count_to_include = settings.get("letter_count_to_include", [])
+    message = ""
     while True:
         print("[!] Letter counts")
         print("Current included letter counts for game: ")
@@ -170,14 +197,17 @@ def __edit_letter_counts(settings):
             score = settings.get('score_per_letter_count', {}).get(letter_count, '0')
             print(f"* {letter_count}-letter words: {word_count} words, {score} points")
 
-        print(f" - [1]: Add letter count")
-        print(f" - [2]: Remove letter count")
-        print(f" - [3]: Change word count")
-        print(f" - [4]: Change score")
+        print(" - [1]: Add letter count")
+        print(" - [2]: Remove letter count")
+        print(" - [3]: Change word count")
+        print(" - [4]: Change score")
         print()
         print(" - [0]: Back")
+        print(message)
 
         chosen = safeint(input("> "))
+        message = ""
+
         if chosen is None:
             continue
 
@@ -186,21 +216,21 @@ def __edit_letter_counts(settings):
         elif chosen == 1:
             letter_count = safeint(input("How many letters to add? "))
             if letter_count is None:
-                print("[x] Invalid number of letters")
+                message = "[x] Invalid number of letters"
                 continue
 
             if find(letter_count_to_include, letter_count) is not None:
-                print("[x] Letter count already included")
+                message = "[x] Letter count already included"
                 continue
 
             word_count = safeint(input("How many words should show up? "))
             if word_count is None:
-                print("[x] Invalid number of words")
+                message = "[x] Invalid number of words"
                 continue
 
             score = safeint(input("How many points is the word worth? "))
             if score is None:
-                print("[x] Invalid score number")
+                message = "[x] Invalid score number"
                 continue
 
             letter_count_to_include.append(letter_count)
@@ -210,47 +240,21 @@ def __edit_letter_counts(settings):
         elif chosen == 2:
             letter_count = safeint(input("How many letters to remove? "))
             if letter_count is None:
-                print("[x] Invalid number of letters")
+                message = "[x] Invalid number of letters"
                 continue
 
             if find(letter_count_to_include, letter_count) is None:
-                print("[x] Letter count already not included")
+                message = "[x] Letter count already not included"
                 continue
 
             letter_count_to_include.remove(letter_count)
             settings["letter_count_to_include"] = letter_count_to_include
         elif chosen == 3:
-            letter_count = safeint(input("How many letters to change word count? "))
-            if letter_count is None:
-                print("[x] Invalid number of letters")
-                continue
-
-            if find(letter_count_to_include, letter_count) is None:
-                print("[x] Letter count not included")
-                continue
-
-            word_count = safeint(input("How many words should show up? "))
-            if word_count is None:
-                print("[x] Invalid number of words")
-                continue
-
-            settings["word_count_per_letter_count"][letter_count] = word_count
+            message = __edit_letter_count_subsetting(settings, "word_count_per_letter_count",
+                                           "How many words should show up?", "Invalid number of words")
         elif chosen == 4:
-            letter_count = safeint(input("How many letters to change score? "))
-            if letter_count is None:
-                print("[x] Invalid number of letters")
-                continue
-
-            if find(letter_count_to_include, letter_count) is None:
-                print("[x] Letter count not included")
-                continue
-
-            score = safeint(input("How many points is the word worth? "))
-            if score is None:
-                print("[x] Invalid score number")
-                continue
-
-            settings["score_per_letter_count"][letter_count] = score
+            message = __edit_letter_count_subsetting(settings, "word_count_per_letter_count",
+                                            "How many points is the word worth?", "Invalid score number")
         else:
             print("Invalid option, try again.")
 
@@ -412,6 +416,7 @@ def __print_word(word, future_words, settings):
 
 def __print_congrats(time_taken, score, judgement_table):
     submitted = False
+    message = ""
     while True:
         print("~~~^ CONGRATULATIONS ^~~~")
         print(f"Congratulations! You took {time_taken:.2f} seconds to type all words.")
@@ -420,11 +425,14 @@ def __print_congrats(time_taken, score, judgement_table):
 
         print(" - [1] View Score Table")
         print(" - [2] Submit to Leaderboard")
-        print(" - [0] Exit")
+        print()
+        print(" - [0]: Exit")
+        print(message)
 
         chosen = safeint(input("> "))
+        message = ""
         if chosen is None:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
             continue
 
         if chosen == 1:
@@ -435,7 +443,7 @@ def __print_congrats(time_taken, score, judgement_table):
         elif chosen == 0:
             break
         else:
-            print("Invalid option, try again.")
+            message = "Invalid option, try again."
 
 def __save_to_leaderboard(time_taken, score, judgement_table):
     name = input("What is your name? ")
@@ -525,6 +533,7 @@ def __paginate_and_navigate_leaderboard(leaderboard):
     page_offset = 0
     page_count = len(leaderboard)
     max_page_view = 10
+    message = ""
 
     while True:
         print(" ^^^ Leaderboard ^^^")
@@ -546,8 +555,10 @@ def __paginate_and_navigate_leaderboard(leaderboard):
         if show_next:
             print(" - [W]: Next")
         print(" - [0]: Exit")
+        print(message)
         raw_chosen = input("> ").lower().strip()
         chosen = safeint(raw_chosen)
+        message = ""
 
         if chosen is None:
             if raw_chosen.startswith("q") and page_offset - max_page_view >= 0:
@@ -555,7 +566,7 @@ def __paginate_and_navigate_leaderboard(leaderboard):
             elif raw_chosen.startswith("w") and page_offset + max_page_view < page_count - 1:
                 page_offset = page_offset + max_page_view
             else:
-                print("Invalid option, try again.")
+                message = "Invalid option, try again."
             continue
 
         if chosen == 0:
@@ -563,7 +574,7 @@ def __paginate_and_navigate_leaderboard(leaderboard):
         else:
             real_index = (chosen + page_offset) - 1 
             if not (0 <= real_index < page_count):
-                print("Invalid option, try again.")
+                message = "Invalid option, try again."
                 continue
             leaderboard_entry = leaderboard[real_index]
             __view_score_table(leaderboard_entry[3], leaderboard_entry[0])
@@ -586,6 +597,7 @@ def __view_score_table(judgement_table, name=None):
     page_offset = 0
     page_count = len(judgement_table)
     max_page_view = 10
+    message = ""
 
     while True:
         print(f" ^^^ Viewing scores{ (' for ' + name) if name is not None else ''} ^^^")
@@ -610,12 +622,18 @@ def __view_score_table(judgement_table, name=None):
 
             print(f" - [{visual_index}]: {correct_word} | {user_input_word}| +{score} pts.")
 
+        show_next = page_offset < page_count - max_page_view
+        show_prev = 0 < page_offset - max_page_view
+
         print()
-        print(" - [Q]: Previous")
-        print(" - [W]: Next")
+        if show_prev:
+            print(" - [Q]: Previous")
+        if show_next:
+            print(" - [W]: Next")
         print(" - [0]: Exit")
         raw_chosen = input("> ").lower().strip()
         chosen = safeint(raw_chosen)
+        message = ""
 
         if chosen is None:
             if raw_chosen.startswith("q") and page_offset - max_page_view >= 0:
@@ -623,7 +641,7 @@ def __view_score_table(judgement_table, name=None):
             elif raw_chosen.startswith("w") and page_offset + max_page_view < page_count - 1:
                 page_offset = page_offset + max_page_view
             else:
-                print("Invalid option, try again.")
+                message = "Invalid option, try again."
             continue
 
         if chosen == 0:
@@ -633,138 +651,3 @@ def __view_score_table(judgement_table, name=None):
 def destroy(ctx):
     # destroy typing game context
     del ctx["typing_game"]
-
-# def __settings():
-    # pass
-    # def boolean_setting(key, name, description):
-    #     def proc():
-            
-    #         procedures_list = [
-    #             procedures.defproc(1, "Toggle", None),
-    #             procedures.defproc(0, "Go Back", None)
-    #         ]
-
-    #         description_display = f"{description}\n \nCurrent value: {str(__get_setting(key)).upper()}"
-
-    #         while True:
-    #             status_code, option, _ = procedures.ask_procedure(name, "?",
-    #                                                     procedures_list,
-    #                                                     after_header=description_display)
-    #             if status_code == STATUS_SUCCESS:
-    #                 if option == 0:
-    #                     break
-    #                 elif option == 1:
-    #                     settings[key] = not __get_setting(key)
-
-    #             description_display = f"{description}\n \nCurrent value: {str(__get_setting(key)).upper()}"
-
-    #     return proc
-
-    # def __opt_letter_counts():
-    #     procedures_list = [
-    #         procedures.defproc(1, "Add", None),
-    #         procedures.defproc(2, "Remove", None),
-    #         procedures.defproc(0, "Go Back", None)
-    #     ]
-
-    #     description = f"Letter counts.\n \nCurrent value: {str(__get_setting("letter_count_to_include")).upper()}"
-
-    #     while True:
-    #         status_code, option, _ = procedures.ask_procedure("Letter counts", "?",
-    #                                                 procedures_list,
-    #                                                 after_header=description)
-    #         if status_code == STATUS_SUCCESS:
-    #             if option == 0:
-    #                 break
-    #             elif option == 1:
-    #                 count = dialog.input("How many letters?", "Letter counts")
-    #                 count = safeint(count)
-    #                 if count is not None and find(__get_setting("letter_count_to_include"), count) is None:
-    #                     __get_setting("letter_count_to_include").append(count)
-    #                 else:
-    #                     print_error("Letter count is invalid or already included.")
-    #             elif option == 2:
-    #                 count = dialog.input(f"Specify letter count to remove? ({__get_setting("letter_count_to_include")})", "Letter counts")
-    #                 count = safeint(count)
-    #                 if count is not None and find(__get_setting("letter_count_to_include"), count) is not None:
-    #                     __get_setting("letter_count_to_include").remove(count)
-    #                 else:
-    #                     print_error("Letter count is invalid or not in the list.")
-
-    #         description = f"Letter counts.\n \nCurrent value: {str(__get_setting("letter_count_to_include")).upper()}"
-
-    # def letter_setting(key, title, description):
-    #     def proc():
-    #         def __edit_for_letter_count(letter_count):
-    #             def proc():
-    #                 new_value = dialog.input(f"{description} (for {letter_count}-letter words).\n \nCurrent: {__get_setting(key)[letter_count]}")
-    #                 new_value = safeint(new_value)
-    #                 if new_value:
-    #                     __get_setting(key)[letter_count] = new_value
-    #                 else:
-    #                     print_error("Bad value specified.")
-    #             return proc
-
-    #         procedures_list = [
-    #             procedures.defproc(0, "Go Back", None)
-    #         ]
-
-    #         item = 1
-    #         for k in __get_setting(key).keys():
-    #             procedures_list.append(procedures.defproc(item, f"{k}-letter words", __edit_for_letter_count(k)))
-    #             item += 1
-
-    #         status_footer = None
-    #         while True:
-    #             status_code, option, _ = procedures.ask_procedure(title, "?",
-    #                                                     procedures_list,
-    #                                                     after_header="Choose the letter count",
-    #                                                     status_footer=status_footer)
-
-    #             if status_code != STATUS_SUCCESS:
-    #                 status_footer = "Invalid option."
-    #                 continue
-    #             else:
-    #                 status_footer = None
-    
-    #             if option == 0:  # exit option
-    #                 break
-
-    #             procedures.do_execute_procedure(procedures_list, option)
-    #     return proc
-
-    # procedures_list = [
-    #     procedures.defproc(1, "Words shuffled randomly", boolean_setting("words_in_random", "Words shuffled randomly", "Words are shuffled in-game. If TRUE, next words are shuffled. Otherwise, words appear in letter-count order.")),
-    #     procedures.defproc(2, "Show words in advance", boolean_setting("show_words_in_advance", "Show words in advance", "Show next words that will be typed.")),
-    #     procedures.defproc(3, "Letter counts", __opt_letter_counts),
-    #     procedures.defproc(4, "Word counts", letter_setting("word_count_per_letter_count", "Word counts", "Choose the number of times these number of words appear in a game.")),
-    #     procedures.defproc(5, "Score per letter count", letter_setting("score_per_letter_count", "Score per letter count", "Choose how much score given for these number of words if typed correctly")),
-    #     procedures.defproc(0, "Exit", None)
-    # ]
-
-    # status_footer = None
-    # procedure_offset = 0
-    # while True:
-    #     status_code, option, _ = procedures.ask_procedure("Settings", "?",
-    #                                                                     procedures_list,
-    #                                                                     status_footer=status_footer,
-    #                                                                     after_header=RULES,
-    #                                                                     procedure_offset=procedure_offset)
-
-    #     if status_code == STATUS_NEXT and option is not None:
-    #         procedure_offset += option
-    #         continue
-    #     elif status_code == STATUS_PREVIOUS and option is not None:
-    #         procedure_offset -= option
-    #         continue
-        
-    #     status_code = procedures.do_execute_procedure(procedures_list, option)
-    #     if status_code != STATUS_SUCCESS:
-    #         status_footer = "Invalid option."
-    #         continue
-    #     else:
-    #         status_footer = None
-
-    #     if option == 0:  # exit option
-    #         __save_settings()
-    #         break
