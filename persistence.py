@@ -4,13 +4,17 @@ import os
 def load_persistence(name):
     persistence_folder = os.path.join("persistence")
     
+    # check if persistence folder exists
+    # if it does not exist, create it as a folder
     if not os.path.exists(persistence_folder):
         os.mkdir(persistence_folder)
 
+    # joins paths together (persistence_folder + "/" + name.properties)
     path = os.path.join(persistence_folder, name + ".properties")
 
     if os.path.exists(path):
         with open(path, "r") as file:
+            # read the file as whole string
             serialized = file.read()
             return parser.deserialize(serialized)
     else:
