@@ -27,7 +27,7 @@
 - [ ] Remove global variables
     - [ ] Everything should be pass by-context or by-parameter
 - [ ] Remove inner functions / lambda functions
-- [ ] Simplify every fucking function
+- [ ] Simplify every fucking function and imports
     - [ ] main.py
     - [ ] parser.py
     - [ ] persistence.py
