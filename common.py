@@ -2,7 +2,6 @@ import random
 
 
 def safeint(given, default=None):
-    # type: (object, object) -> int | object
     
     '''
     safeint() functions equivalently like int(),
@@ -17,7 +16,6 @@ def safeint(given, default=None):
 # to emulate safe behavior, * 100 and turn it into an int.
 
 def swap(the_list, a, b):
-    # type: (list[object], int, int) -> None
     '''
     Swaps two items in a list in-place.
     Users should check indices before swapping.
@@ -39,7 +37,6 @@ def sort(the_list, comparator):
         swap(the_list, i, min_value_idx)
 
 def find(haystack, needle):
-    # type: (list[object], object) -> int | None
     '''Performs linear search and returns an index of needle in list haystack.'''
     
     for i in range(len(haystack)):
@@ -49,17 +46,18 @@ def find(haystack, needle):
     return None
 
 def randbool():
-    # type: () -> bool
     ''' Generates a random boolean True or False. '''
     return random.randint(0, 1) == 1
 
 def lerp(a, b, t):
-    # type: (float, float, float) -> float
     ''' Linear interpolation function. '''
     return a + (b - a) * t
 
+def clamp(value, min_value, max_value):
+    ''' Restricts value to range [min, max]. '''
+    return min(max(value, min_value), max_value)
+
 def str_to_bool(given):
-    # type: (object) -> bool
     ''' Safely converts a string to a boolean. '''
     if given is None:
         return False
@@ -70,7 +68,6 @@ def str_to_bool(given):
     return given.strip().lower() == "true"
 
 def get_whole_digits(number):
-    # type: (int) -> int
     '''
     Returns the number of digits in a number.
     Does not consider decimal digits.
@@ -86,7 +83,6 @@ def get_whole_digits(number):
     return digit_count + 1
 
 def print_error(value):
-    # type: (str) -> None
     ''' Prints an error on the screen. '''
     print(" !!! [ERROR] !!! ")
     print(value)
