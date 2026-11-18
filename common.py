@@ -87,5 +87,11 @@ def print_error(value):
     print(" !!! [ERROR] !!! ")
     print(value)
     print()
+    pause()
+
+def pause():
+    ''' Pauses execution until the user presses Enter. '''
     print("Press [ENTER] to continue... ", end="")
     input()
+    print()
+
