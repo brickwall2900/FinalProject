@@ -6,6 +6,7 @@ from common import print_error
 
 from games.typing_game.main import call as typing_game
 from games.minesweeper.main import call as minesweeper
+from games.last_letter.main import call as last_letter
 
 def preload_stuff(ctx):
     print("Preloading stuff...")
@@ -31,6 +32,9 @@ def greet(ctx):
     print()
     print("Hello, user!")
     print(ctx["motd"])
+    
+def show_games_and_choose(ctx):
+    typing_game(ctx)
 
 def main():
     # global context and variable space for games to use
@@ -44,7 +48,7 @@ def main():
     print()
     
     greet(global_context)
-    minesweeper(global_context)
+    show_games_and_choose(global_context)
 
 
 if __name__ == "__main__":
