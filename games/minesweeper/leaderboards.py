@@ -102,8 +102,8 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
 
             print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds; {width}x{height} w/ {mine_count} mines.")
 
-        show_next = page_offset < page_count - max_page_view
-        show_prev = 0 < page_offset - max_page_view
+        show_next = (page_offset - 1) > (page_count - max_page_view)
+        show_prev = 0 < (page_offset - max_page_view)
 
         print()
         if show_prev:

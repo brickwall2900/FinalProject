@@ -102,8 +102,8 @@ def __paginate_and_navigate_leaderboard(leaderboard):
 
             print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds; {score} pts.")
 
-        show_next = page_offset < page_count - max_page_view
-        show_prev = 0 < page_offset - max_page_view
+        show_next = (page_offset - 1) > (page_count - max_page_view)
+        show_prev = 0 < (page_offset - max_page_view)
 
         print()
         if show_prev:
@@ -178,8 +178,8 @@ def view_score_table(judgement_table, name=None):
 
             print(f" - [{visual_index}]: {correct_word} | {user_input_word}| +{score} pts.")
 
-        show_next = page_offset < page_count - max_page_view
-        show_prev = 0 < page_offset - max_page_view
+        show_next = (page_offset - 1) > (page_count - max_page_view)
+        show_prev = 0 < (page_offset - max_page_view)
 
         print()
         if show_prev:
