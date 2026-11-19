@@ -22,19 +22,19 @@
     - [x] Remove dialog.py
 - [x] Remove common::shuffle
 - [x] Remove common::pick_randomly
-- [ ] Inline print() replacing tgfx_...
-- [ ] Replace double quote f-strings with single quotes
+- [x] Inline print() replacing tgfx_...
+- [x] Replace double quote f-strings with single quotes
 - [x] Remove global variables
     - [x] Everything should be pass by-context or by-parameter
 - [ ] Remove inner functions / lambda functions
 - [ ] No usage of functions as a variable (functions first-class)
-- [ ] Simplify every fucking function and imports
+- [x] Simplify every fucking function and imports
     - [x] main.py
     - [x] parser.py
     - [x] persistence.py
-    - [ ] typing_game.py
-    - [ ] minesweeper.py
-    - [ ] last_letter.py
+    - [x] typing_game.py
+    - [x] minesweeper.py
+    - [x] last_letter.py
 
 By 12 AM, everything should be up and working
 - 3:38 AM; It is past 12 and everything is still not fucking working.
