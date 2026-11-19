@@ -92,7 +92,10 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
     while True:
         print(" ^^^ Leaderboard ^^^")
 
-        for index in range(page_offset, min(page_count, page_offset + max_page_view)):
+        page_end = min(page_count, page_offset + max_page_view)
+        items_on_page = page_end - page_offset
+
+        for index in range(page_offset, page_end):
             entry = leaderboard[index]
             name = entry[0]
             time = entry[1]
@@ -102,8 +105,8 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
 
             print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds; {width}x{height} w/ {mine_count} mines.")
 
-        show_next = (page_offset - 1) > (page_count - max_page_view)
-        show_prev = 0 < (page_offset - max_page_view)
+        show_prev = page_offset > 0
+        show_next = page_end < page_count
 
         print()
         if show_prev:
@@ -129,7 +132,7 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
             break
         else:
             real_index = (chosen + page_offset) - 1 
-            if not (0 <= real_index < page_count):
+            if not (0 <= real_index < items_on_page):
                 message = "Invalid option, try again."
                 continue
             leaderboard_entry = leaderboard[real_index]
