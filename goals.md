@@ -9,6 +9,9 @@
 - [ ] candy crush
 - [ ] wordle
 - [x] minesweeper
+- [ ] word bomb
+- [ ] math murder
+- [ ] word search?
 - [ ] sudoku
 - [ ] petdoku
 - [?] windows ANSI detection
