@@ -10,7 +10,7 @@
 - [ ] wordle
 - [x] minesweeper
 - [x] word bomb
-- [ ] math murder
+- [x] math murder
 - [ ] word search?
 - [ ] sudoku
 - [ ] petdoku
@@ -19,7 +19,7 @@
     - [ ] parser.py
     - [ ] persistence.py
     - [ ] common.py
-    - [ ] comparators.py ? (remove this file)
+    - [x] comparators.py ? (remove this file)
     - [ ] word_bank.py
     - [ ] motd.py
     - [ ] typing_game/*
