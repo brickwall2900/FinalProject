@@ -2,7 +2,7 @@ import os
 
 import data.word_bank as word_bank
 import data.motd as motd
-from common import print_error
+from common import print_error, safeint
 
 from games.typing_game.main import call as typing_game
 from games.minesweeper.main import call as minesweeper
@@ -34,7 +34,38 @@ def greet(ctx):
     print(ctx["motd"])
     
 def show_games_and_choose(ctx):
-    typing_game(ctx)
+    message = ""
+    while True:
+        print(" ~~~ [Game Selecton] ~~~")
+        print("The Typing Game tests your typing skills by you typing words with speed and accuracy!")
+        print(" - [1]: Typing Game")
+        print(" - [2]: Minesweeper")
+        print(" - [3]: Word Bomb")
+        print(" - [4]: Math Murder")
+        print()
+        print(" - [0]: Exit")
+        print(message)
+        chosen = safeint(input("> "))
+
+        message = ""
+        
+        if chosen is None:
+            message = "Invalid option, try again."
+            continue
+        
+        if chosen == 1:
+            typing_game(ctx)
+        elif chosen == 2:
+            minesweeper(ctx)
+        elif chosen == 3:
+            last_letter(ctx)
+        elif chosen == 4:
+            pass
+        elif chosen == 0:
+            print("BYEEE!!")
+            break
+        else:
+            message = "Invalid option, try again."
 
 def main():
     # global context and variable space for games to use
