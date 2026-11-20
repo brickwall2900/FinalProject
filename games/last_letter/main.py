@@ -10,18 +10,10 @@ from games.last_letter.bot import __bot_turn
 # inspired by that one ropblox game i played
 
 def call(g_ctx):
-    if init(g_ctx):
-        run(g_ctx)
-
+    run(g_ctx)
     destroy(g_ctx)
 
-def init(g_ctx):
-    g_ctx["word_bomb"] = {}
-
-    return True
-
 def run(g_ctx):
-    last_letter_ctx = g_ctx["word_bomb"]
     words = g_ctx["words"]
 
     message = ""
@@ -42,7 +34,7 @@ def run(g_ctx):
             continue
         
         if chosen == 1:
-            game(last_letter_ctx, words)
+            game(words)
         elif chosen == 2:
             __about()
         elif chosen == 0:
@@ -75,7 +67,7 @@ def __count(players, is_a_bot):
             number += 1
     return number
 
-def game(ctx, words):
+def game(words):
     players = [] # a list of dicts (player data)
 
     number_of_players = None

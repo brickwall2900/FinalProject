@@ -12,19 +12,13 @@ from games.minesweeper.leaderboards import __view_leaderboard
 # yay i'm realy proud of this
 
 def call(g_ctx):
-    # small boilerplate
-    if init(g_ctx):
-        run(g_ctx)
+    run(g_ctx)
 
     destroy(g_ctx)
 
-def init(g_ctx):
-    g_ctx["minesweeper"] = {}
-    
-    return True
-
 def run(g_ctx):
-    game_context = g_ctx["minesweeper"]
+    game_context = {}
+    g_ctx["minesweeper"] = game_context
     
     message = ""
     while True:
