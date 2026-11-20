@@ -1,4 +1,4 @@
-from common import str_to_bool, safeint, find
+from common import str_to_bool, safeint, find, list_safe_get
 import persistence
 
 def load_settings(ctx):
@@ -38,10 +38,6 @@ def __parse_settings(settings_loaded):
 
     parsed_settings["letter_count_to_include"] = letter_count_to_include
 
-    # if the list if empty, stop cuz we can't have 0 letters
-    if len(letter_count_to_include) == 0:
-        return None
-
     word_count_per_letter_count = {}
     score_per_letter_count = {}
     for letters in letter_count_to_include:
@@ -62,8 +58,8 @@ def save_settings(settings):
     }
 
     for letter_count in settings["letter_count_to_include"]:
-        saved_settings[f"word_count_per_letter_count_{letter_count}"] = str(settings["word_count_per_letter_count"][letter_count])
-        saved_settings[f"score_per_letter_count_{letter_count}"] = str(settings["score_per_letter_count"][letter_count])
+        saved_settings[f"word_count_per_letter_count_{letter_count}"] = str(list_safe_get(settings.get("word_count_per_letter_count"), letter_count))
+        saved_settings[f"score_per_letter_count_{letter_count}"] = str(list_safe_get(settings.get("score_per_letter_count"), letter_count))
 
     persistence.save_persistence("typing_game", saved_settings)
     print("[+] Saved settings!")
