@@ -84,7 +84,7 @@ def game(words):
 
     print("You can either have two or more keyboards connected to the same computer albeit with sabotage...OR " \
     "share one keyboard... albeit with contention.")
-    pause()
+    print()
 
     print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}")
     ready = yes_or_no("Are y'all ready")

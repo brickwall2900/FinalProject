@@ -71,4 +71,4 @@ def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, max_ti
     print(s2)
     if message:
         print("[!] " + message)
-    print(f"> {'Bot is thinking...' if is_bot else ''}", end="")
+    print(f"> {'Bot is thinking...' if is_bot else ''}", end="", flush=True)
