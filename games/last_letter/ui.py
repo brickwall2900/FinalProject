@@ -1,7 +1,7 @@
 from common import *
 
 def __about():
-    print("Hi")
+    print("Word Bomb ")
 
 def __leaderboard_comparator(this, that):
     return this["ranking"] - that["ranking"]
@@ -53,17 +53,22 @@ def __show_leaderboard(players):
         if chosen == 0:
             break
 
-def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, message):
+def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, max_time_left, message):
     LETTER_START        = 0
     LETTER_END          = 1
     
-    s0 = f"Player {name} {'(Bot)' if is_bot else ''}; ({lives}/3) lives {time_left:.2f} s left!"
-    s1 = f"TYPE THE WORD {'STARTING' if start_or_end == LETTER_START else 'ENDING'} WITH"
-    s2 = (letters + ("_" * clamp(10 - len(letters), 0, 10))) if start_or_end == LETTER_START else (("_" * clamp(10 - len(letters), 0, 10)) + letters)
-    print(s0)
+    fuse_length = "~" * int((time_left / max_time_left) * 4)
+    
+    s0 = f"Player {name} {'(Bot)' if is_bot else ''}; ({lives}/3) lives;"
+    s1 = f"(^){fuse_length} ({time_left:.2f} s) TYPE THE WORD {'STARTING' if start_or_end == LETTER_START else 'ENDING'} WITH"
+    
+    underscores = ("_" * clamp(10 - len(letters), 0, 10))
+    s2 = (letters + underscores) if start_or_end == LETTER_START else (underscores + letters)
+    
     print("----------------")
+    print(s0)
     print(s1)
     print(s2)
-    print(f"> {'Bot is thinking...' if is_bot else ''}", end="")
     if message:
-        print(message)
+        print("[!] " + message)
+    print(f"> {'Bot is thinking...' if is_bot else ''}", end="")

@@ -77,13 +77,13 @@ def game(words):
         if number_of_players is not None and number_of_players < 2:
             print_error("Cannot have less than two players.")
             number_of_players = None # whoops
-        else:
+        elif number_of_players is None:
             print_error("Invalid player count.")
 
     for id in range(number_of_players):
         players.append(__setup_player(id))
 
-    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...\n \nOR\n \n" \
+    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...\nOR\n" \
     "share one keyboard... albeit with contention.")
     pause()
 
@@ -98,6 +98,7 @@ def __core_game_loop(players, words):
 
     previous_word = None
     time_seconds = 10
+    rounds = 0
     prev_player_finish_time = None
     words_used = []
     message = None
@@ -112,7 +113,7 @@ def __core_game_loop(players, words):
                 continue
 
             # pick a letter first
-            start_or_end, letters = __pick_letter(words, previous_word)
+            start_or_end, letters = __pick_letter(words, previous_word, rounds)
 
             name = player["name"]
             is_a_bot = not player["real"]
@@ -123,7 +124,7 @@ def __core_game_loop(players, words):
                 if player["lives"] <= 0:
                     break
 
-                __print_letter(start_or_end, letters, name, is_a_bot, player["lives"], 10 - (time.time() - judge_timestamp), message)
+                __print_letter(start_or_end, letters, name, is_a_bot, player["lives"], time_seconds - (time.time() - judge_timestamp), time_seconds, message)
 
                 word = None
                 if is_a_bot:
@@ -147,9 +148,16 @@ def __core_game_loop(players, words):
                     prev_player_finish_time = time_taken
                     words_used.append(word)
                     message = f"{name} took {prev_player_finish_time:.2f} seconds to finish!"
+                    
+                    if word is not None and len(word) > 0:
+                        previous_word = word
+                    else:
+                        previous_word = None
+                        
                     break
                 elif word is not None:
-                    player["lives"] -= 1
+                    # player["lives"] -= 1
+                    # unfair?
                     if not okay1:
                         message = "You used an already submitted word! \"" + word + "\""
                     elif not okay2 or not okay3:
@@ -162,6 +170,10 @@ def __core_game_loop(players, words):
                 message = f"Uh-oh! {name} ran out of lives and lost..."
                 player["ranking"] = ranking
                 ranking -= 1
+                
+        rounds += 1
+        if (20 - rounds) >= 0:
+            time_seconds = lerp(5, 10, max(1, (rounds - 20) / 100))
 
     # last one standing wins rank 1
     for player in players:
@@ -171,10 +183,12 @@ def __core_game_loop(players, words):
     __show_leaderboard(players)
 
 # returns tuple (LETTER_START | LETTER_END, <chars>)
-def __pick_letter(words, previous_word):
+def __pick_letter(words, previous_word, round):
     LETTER_START        = 0
     LETTER_END          = 1
     start_or_end = LETTER_START if randbool() else LETTER_END
+    
+    random.seed()
 
     # then chars
     # it needs to be something from the dictionary
@@ -243,7 +257,11 @@ def __pick_letter(words, previous_word):
 
     chosen_letter_count_idx = random.choices(sorted_easiest_to_hardest, weights=max_chars, k=1)
     chosen_letter_count = chars_to_slice_list[chosen_letter_count_idx[0]]
+    if round < 20:
+        chosen_letter_count = chars_to_slice_list[min(chosen_letter_count_idx[0] - 1, 0)]
+    
     # ouch...
+    
     chosen_letters = None
     if len(previous_word) >= chosen_letter_count:
         if start_or_end == LETTER_START:
