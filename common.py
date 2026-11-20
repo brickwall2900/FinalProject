@@ -5,11 +5,16 @@ def safeint(given, default=None):
     
     '''
     safeint() functions equivalently like int(),
-    but returns `None` on invalid input.
+    but returns `default` on invalid input.
     '''
     
-    if isinstance(given, str) and str.isdigit(given) and str.isascii(given):
-        return int(given)
+    if isinstance(given, str):
+        is_negative = str.startswith(given, "-")
+        if str.startswith(given, "-") or str.startswith(given, "+"):
+            given = given[1:]
+            
+        if str.isdigit(given) and str.isascii(given):
+            return int(given) * (-1 if is_negative else 1)
     return default
 
 # NOTE: safefloat is deleted
@@ -85,6 +90,10 @@ def get_whole_digits(number):
     Returns the number of digits in a number.
     Does not consider decimal digits.
     '''
+    if number == 0:
+        return 0
+    
+    number = -number if number < 0 else number
     digit_count = 0
     while True:
         quotient = number // 10
