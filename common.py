@@ -83,7 +83,7 @@ def yes_or_no(question):
     if not isinstance(given_text, str):
         return False
         
-    return given_text.strip().lower().startswith("ye")
+    return given_text.strip().lower().startswith("y")
 
 def get_whole_digits(number):
     '''
