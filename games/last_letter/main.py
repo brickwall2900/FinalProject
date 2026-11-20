@@ -11,7 +11,6 @@ from games.last_letter.bot import __bot_turn
 
 def call(g_ctx):
     run(g_ctx)
-    destroy(g_ctx)
 
 def run(g_ctx):
     words = g_ctx["words"]
@@ -83,12 +82,15 @@ def game(words):
     for id in range(number_of_players):
         players.append(__setup_player(id))
 
-    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...\nOR\n" \
+    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...OR " \
     "share one keyboard... albeit with contention.")
     pause()
 
-    print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}\n \nAre ya'll ready?")
-    pause()
+    print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}")
+    ready = yes_or_no("Are y'all ready")
+    if not ready:
+        print("Okay; someone is not ready...")
+        return
 
     __core_game_loop(players, words)
 
@@ -99,7 +101,6 @@ def __core_game_loop(players, words):
     previous_word = None
     time_seconds = 10
     rounds = 0
-    prev_player_finish_time = None
     words_used = []
     message = None
     ranking = len(players)
@@ -242,7 +243,7 @@ def __pick_letter(words, previous_word, round):
     sorted_easiest_to_hardest = []
     while len(sorted_easiest_to_hardest) < len(chars_to_slice_list):
         max = None
-        max_i = None
+        max_i = 0
         for i in range(len(chars_to_slice_list)):
             letter = chars_to_slice_list[i]
             if find(sorted_easiest_to_hardest, letter) is not None:
@@ -272,6 +273,3 @@ def __pick_letter(words, previous_word, round):
         chosen_letters = previous_word
 
     return (start_or_end, chosen_letters)
-
-def destroy(g_ctx):
-    del g_ctx["word_bomb"]

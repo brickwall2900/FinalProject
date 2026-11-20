@@ -66,6 +66,19 @@ def str_to_bool(given):
         given = str(given)
 
     return given.strip().lower() == "true"
+    
+def yes_or_no(question):
+    ''' Checks if the given string agrees with a question. '''
+    
+    given_text = input(question + "? ")
+    
+    if str_to_bool(given_text):
+        return True
+        
+    if not isinstance(given_text, str):
+        return False
+        
+    return given_text.strip().lower().startswith("ye")
 
 def get_whole_digits(number):
     '''

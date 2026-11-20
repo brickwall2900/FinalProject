@@ -7,7 +7,7 @@ from games.math_murder.bot import __bot_turn
 
 # inspired by that one ropblox game i played
 
-def call(unused):
+def call(_unused):
     run()
 
 def run():
@@ -78,12 +78,15 @@ def game(words):
     for id in range(number_of_players):
         players.append(__setup_player(id))
 
-    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...\n \nOR\n \n" \
+    print("You can either have two or more keyboards connected to the same computer albeit with sabotage... OR " \
     "share one keyboard... albeit with contention.")
     pause()
 
     print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}\n \nAre ya'll ready?")
-    pause()
+    ready = yes_or_no("Are y'all ready")
+    if not ready:
+        print("Okay; someone is not ready...")
+        return
 
     __core_game_loop(players, words)
 
@@ -166,5 +169,16 @@ def __core_game_loop(players, words):
     __show_leaderboard(players)
 
 # returns tuple (<equation>, <correct answer>)
-def __build_next_equation(equation, prev_correct_answer):
+def __build_next_equation(equation, prev_correct_answer, rounds):
+    OP_ADD            = 0
+    OP_MULTIPLY       = 2
     
+    max_operation = OP_ADD
+    if rounds > 10:
+        max_operation = OP_MULTIPLY
+    max_number = lerp()
+        
+    operation_used = random.randint(OP_ADD, max_operation)
+    
+    if operation_used == OP_ADD:
+        prev_correct_answer += rand.
