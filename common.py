@@ -104,6 +104,17 @@ def get_whole_digits(number):
         number = quotient
     return digit_count + 1
 
+def list_safe_get(the_list, index):
+    ''' Safely returns an item from the list; Return None if the list is out of bounds or is not a list. '''
+    
+    if not isinstance(the_list, list):
+        return None
+    
+    if 0 <= index < len(the_list):
+        return the_list[index]
+    
+    return None
+
 def print_error(value):
     ''' Prints an error on the screen. '''
     print(" !!! [ERROR] !!! ")
