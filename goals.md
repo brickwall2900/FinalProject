@@ -15,13 +15,13 @@
 - [ ] sudoku
 - [ ] petdoku
 - [ ] documentation
-    - [ ] main.py
-    - [ ] parser.py
-    - [ ] persistence.py
-    - [ ] common.py
+    - [x] main.py
+    - [x] parser.py
+    - [x] persistence.py
+    - [x] common.py
     - [x] comparators.py ? (remove this file)
-    - [ ] word_bank.py
-    - [ ] motd.py
+    - [x] word_bank.py
+    - [x] motd.py
     - [ ] typing_game/*
     - [ ] minesweper/*
     - [ ] last_letter/*

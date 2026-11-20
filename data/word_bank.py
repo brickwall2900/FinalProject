@@ -16,7 +16,7 @@ def try_loading_words(word_bank_filepath):
             if len(line) <= 0:
                 break
 
-            if line.startswith("#"):
+            if line.startswith("#"): # maybe a comment
                 continue
 
             line = line.strip()
