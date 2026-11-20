@@ -58,6 +58,7 @@ def __print_equation(equation, name, is_bot, lives, time_left, message):
     s1 = "SOLVE THE FOLLOWING EQUATION! QUICKLY!!"
     s2 = equation + " = ???"
     print()
+    print("----------------")
     print(s0)
     print("----------------")
     print(s1)

@@ -65,8 +65,10 @@ def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, max_ti
     underscores = ("_" * clamp(10 - len(letters), 0, 10))
     s2 = (letters + underscores) if start_or_end == LETTER_START else (underscores + letters)
     
+    print()
     print("----------------")
     print(s0)
+    print("----------------")
     print(s1)
     print(s2)
     if message:
