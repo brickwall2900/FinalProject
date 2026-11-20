@@ -1,11 +1,11 @@
-import persistence
-
 from data import word_bank
 
 import time
 import random
 
 from common import *
+from games.last_letter.ui import __about, __print_letter, __show_leaderboard
+from games.last_letter.bot import __bot_turn
 
 # inspired by that one ropblox game i played
 
@@ -26,7 +26,7 @@ def run(g_ctx):
 
     message = ""
     while True:
-        print(" ~~~ Word Bomb ~~~")
+        print(" ~~~ [!] Word Bomb [!] ~~~")
         print("Word Bomb is a multiplayer game. Come up with words that have the first or last letter! Last one standing alive wins.")
         print(" - [1]: PLAY!!!")
         print(" - [2]: About")
@@ -49,9 +49,6 @@ def run(g_ctx):
             break
         else:
             message = "Invalid option, try again."
-
-def __about():
-    print("Hi")
 
 def __setup_player(id):
     BOT_NAMES = ["Computer", "Robot", "Bot", "AI", "CPU", "Agent", "Claude 0.1 ", "ChatGPT 1 ", "Pythonista"]
@@ -141,7 +138,7 @@ def __core_game_loop(players, words):
                     time.sleep(1)
                     word = __bot_turn(words, start_or_end, letters, player["bot_skill"], player)
                 else:
-                    word = __player_turn(start_or_end, letters)
+                    word = input().strip().lower()
 
                 time_taken = (time.time() - judge_timestamp)
                 if time_taken > time_seconds: # timed out
@@ -180,56 +177,6 @@ def __core_game_loop(players, words):
             player["ranking"] = 1
 
     __show_leaderboard(players)
-
-def __leaderboard_comparator(this, that):
-    return this["ranking"] - that["ranking"]
-
-def __show_leaderboard(players):
-    sort(players, __leaderboard_comparator)
-
-    page_offset = 0
-    page_count = len(players)
-    max_page_view = 10
-    message = ""
-
-    while True:
-        print(" ^^^ Leaderboard ^^^")
-
-        page_end = min(page_count, page_offset + max_page_view)
-        items_on_page = page_end - page_offset
-
-        for index in range(page_offset, page_end):
-            player = players[index]
-            name = player.get("name", "Anonymous")
-            score = player.get("score", 0)
-
-            print(f" - [{(index - page_offset) + 1}]: {name}; {score} pts.")
-
-        show_prev = page_offset > 0
-        show_next = page_end < page_count
-
-        print()
-        if show_prev:
-            print(" - [Q]: Previous")
-        if show_next:
-            print(" - [W]: Next")
-        print(" - [0]: Exit")
-        print(message)
-        raw_chosen = input("> ").lower().strip()
-        chosen = safeint(raw_chosen)
-        message = ""
-
-        if chosen is None:
-            if raw_chosen.startswith("q") and show_prev:
-                page_offset = page_offset - max_page_view
-            elif raw_chosen.startswith("w") and show_next:
-                page_offset = page_offset + max_page_view
-            else:
-                message = "Invalid option, try again."
-            continue
-
-        if chosen == 0:
-            break
 
 # returns tuple (LETTER_START | LETTER_END, <chars>)
 def __pick_letter(words, previous_word):
@@ -315,65 +262,6 @@ def __pick_letter(words, previous_word):
         chosen_letters = previous_word
 
     return (start_or_end, chosen_letters)
-
-def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, message):
-    LETTER_START        = 0
-    LETTER_END          = 1
-    
-    s0 = f"Player {name} {'(Bot)' if is_bot else ''}; ({lives}/3) lives {time_left:.2f} s left!"
-    s1 = f"TYPE THE WORD {'STARTING' if start_or_end == LETTER_START else 'ENDING'} WITH"
-    s2 = (letters + ("_" * clamp(10 - len(letters), 0, 10))) if start_or_end == LETTER_START else (("_" * clamp(10 - len(letters), 0, 10)) + letters)
-    print(s0)
-    print("----------------")
-    print(s1)
-    print(s2)
-    print(f"> {'Bot is thinking...' if is_bot else ''}", end="")
-    if message:
-        print(message)
-
-# returns True if the player manages to get the word in time, False if the player runs out of time
-def __player_turn(start_or_end, letters):
-    return input().strip().lower()
-
-def __bot_turn(words, start_or_end, letters, bot_difficulty, player_data):
-    LETTER_START        = 0
-    LETTER_END          = 1
-    
-    # bot difficulty
-    # n - secs max / sluggishness secs
-    # 0 - 12 / .7
-    # 1 - 2 / .1
-    seconds_budget = lerp(12, 2, bot_difficulty) + random.random() * 2 * (-1 if randbool() else 1)
-    sluggish = lerp(.7, .1, bot_difficulty)
-
-    time_start_timestamp = time.time()
-    chosen_word = None
-    correct_word = None
-
-    # ok solve
-    while True:
-        if (time.time() - time_start_timestamp) > seconds_budget:
-            return None
-
-        word = word_bank.get_random_word(words)
-        if start_or_end == LETTER_START:
-            if str.startswith(word, letters):
-                chosen_word = word
-                correct_word = word
-                break
-        else:
-            if str.endswith(word, letters):
-                chosen_word = word
-                correct_word = word
-                break
-
-        time.sleep(clamp(random.random() * sluggish, 0, seconds_budget - (time.time() - time_start_timestamp)))
-
-    player_data["bot_correct_word"] = correct_word
-    # how the fuck can i artifically mess upthe bot
-
-    return chosen_word
-    
 
 def destroy(g_ctx):
     del g_ctx["word_bomb"]
