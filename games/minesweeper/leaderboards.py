@@ -131,10 +131,10 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
         if chosen == 0:
             break
         else:
-            real_index = (chosen + page_offset) - 1 
-            if not (0 <= real_index < items_on_page):
+            if not (1 <= chosen <= items_on_page):
                 message = "Invalid option, try again."
                 continue
+            real_index = page_offset + (chosen - 1)
             leaderboard_entry = leaderboard[real_index]
             time = leaderboard_entry[1]
             width = leaderboard_entry[2]

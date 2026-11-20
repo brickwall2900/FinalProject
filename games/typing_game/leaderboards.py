@@ -42,7 +42,7 @@ def __leaderboard_comparator(this, that):
     else: # if same score, compare by time instead.
         this_time = this[1]
         that_time = that[1]
-        return (that_time - this_time)
+        return (this_time - that_time)
 
 def __parse_leaderboard(loaded_leaderboard):
     the_leaderboard = []
@@ -130,10 +130,10 @@ def __paginate_and_navigate_leaderboard(leaderboard):
         if chosen == 0:
             break
         else:
-            real_index = (chosen + page_offset) - 1 
-            if not (0 <= real_index < items_on_page):
+            if not (1 <= chosen <= items_on_page):
                 message = "Invalid option, try again."
                 continue
+            real_index = page_offset + (chosen - 1)
             leaderboard_entry = leaderboard[real_index]
             view_score_table(leaderboard_entry[3], leaderboard_entry[0])
 
