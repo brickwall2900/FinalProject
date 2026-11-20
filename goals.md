@@ -25,6 +25,11 @@
     - [ ] typing_game/*
     - [ ] minesweper/*
     - [ ] last_letter/*
+- [ ] ANSI
+    - [ ] typing game
+    - [ ] minesweeper
+    - [ ] math murder
+    - [ ] last letter
 - [?] windows ANSI detection
 
 # Simplification
