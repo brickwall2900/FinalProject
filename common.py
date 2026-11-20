@@ -70,7 +70,7 @@ def str_to_bool(given):
 def yes_or_no(question):
     ''' Checks if the given string agrees with a question. '''
     
-    given_text = input(question + "? ")
+    given_text = input(question + "? (YES/NO) ")
     
     if str_to_bool(given_text):
         return True
