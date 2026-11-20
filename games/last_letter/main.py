@@ -8,8 +8,6 @@ import random
 from common import *
 
 # inspired by that one ropblox game i played
-LETTER_START        = 0
-LETTER_END          = 1
 
 def call(g_ctx):
     if init(g_ctx):
@@ -106,6 +104,9 @@ def game(ctx, words):
     __core_game_loop(players, words)
 
 def __core_game_loop(players, words):
+    LETTER_START        = 0
+    LETTER_END          = 1
+
     previous_word = None
     time_seconds = 10
     prev_player_finish_time = None
@@ -232,6 +233,8 @@ def __show_leaderboard(players):
 
 # returns tuple (LETTER_START | LETTER_END, <chars>)
 def __pick_letter(words, previous_word):
+    LETTER_START        = 0
+    LETTER_END          = 1
     start_or_end = LETTER_START if randbool() else LETTER_END
 
     # then chars
@@ -314,6 +317,9 @@ def __pick_letter(words, previous_word):
     return (start_or_end, chosen_letters)
 
 def __print_letter(start_or_end, letters, name, is_bot, lives, time_left, message):
+    LETTER_START        = 0
+    LETTER_END          = 1
+    
     s0 = f"Player {name} {'(Bot)' if is_bot else ''}; ({lives}/3) lives {time_left:.2f} s left!"
     s1 = f"TYPE THE WORD {'STARTING' if start_or_end == LETTER_START else 'ENDING'} WITH"
     s2 = (letters + ("_" * clamp(10 - len(letters), 0, 10))) if start_or_end == LETTER_START else (("_" * clamp(10 - len(letters), 0, 10)) + letters)
@@ -330,6 +336,9 @@ def __player_turn(start_or_end, letters):
     return input().strip().lower()
 
 def __bot_turn(words, start_or_end, letters, bot_difficulty, player_data):
+    LETTER_START        = 0
+    LETTER_END          = 1
+    
     # bot difficulty
     # n - secs max / sluggishness secs
     # 0 - 12 / .7
