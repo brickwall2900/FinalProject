@@ -7,6 +7,7 @@ from common import print_error, safeint
 from games.typing_game.main import call as typing_game
 from games.minesweeper.main import call as minesweeper
 from games.last_letter.main import call as last_letter
+from games.math_murder.main import call as math_murder
 
 def preload_stuff(ctx):
     print("Preloading stuff...")
@@ -60,7 +61,7 @@ def show_games_and_choose(ctx):
         elif chosen == 3:
             last_letter(ctx)
         elif chosen == 4:
-            pass
+            math_murder(ctx)
         elif chosen == 0:
             print("BYEEE!!")
             break

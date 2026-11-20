@@ -1,45 +1,29 @@
-from data import word_bank
-
 import time
 import random
 
 from common import *
 
-def __bot_turn(words, start_or_end, letters, bot_difficulty, player_data):
-    LETTER_START        = 0
-    LETTER_END          = 1
-    
+def __bot_turn(equation, correct_answer, bot_difficulty, player_data):
     # bot difficulty
-    # n - secs max / sluggishness secs
-    # 0 - 12 / .7
-    # 1 - 2 / .1
-    seconds_budget = lerp(12, 2, bot_difficulty) + random.random() * 2 * (-1 if randbool() else 1)
-    sluggish = lerp(.7, .1, bot_difficulty)
+    # n - initial delay / solve delay / errors / error chance
+    # 0 - 7 / 1 / 5 / 1/10
+    # 1 - 1 / .5 / 2 / 1/100
+    initial_delay = lerp(7, 1, bot_difficulty)
+    solve_delay = lerp(1, .5, bot_difficulty)
+    errors = lerp(5, 2, bot_difficulty)
+    error_chance = int(lerp(10, 100, bot_difficulty))
 
-    time_start_timestamp = time.time()
-    chosen_word = None
-    correct_word = None
+    error_count = player_data.get("bot_errors", errors)
+    
+    time.sleep(initial_delay)
 
     # ok solve
-    while True:
-        if (time.time() - time_start_timestamp) > seconds_budget:
-            return None
-
-        word = word_bank.get_random_word(words)
-        if start_or_end == LETTER_START:
-            if str.startswith(word, letters):
-                chosen_word = word
-                correct_word = word
-                break
-        else:
-            if str.endswith(word, letters):
-                chosen_word = word
-                correct_word = word
-                break
-
-        time.sleep(clamp(random.random() * sluggish, 0, seconds_budget - (time.time() - time_start_timestamp)))
-
-    player_data["bot_correct_word"] = correct_word
-    # how the fuck can i artifically mess upthe bot
-
-    return chosen_word
+    user_answer = correct_answer
+    
+    if random.randint(0, error_chance) == 0 and error_count > 0:
+        user_answer += random.randint(-100, 100)
+        error_count -= 1
+        player_data["bot_errors"] = error_count
+        time.sleep(random.random() * solve_delay)
+        
+    return user_answer
