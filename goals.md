@@ -9,11 +9,22 @@
 - [ ] candy crush
 - [ ] wordle
 - [x] minesweeper
-- [ ] word bomb
+- [x] word bomb
 - [ ] math murder
 - [ ] word search?
 - [ ] sudoku
 - [ ] petdoku
+- [ ] documentation
+    - [ ] main.py
+    - [ ] parser.py
+    - [ ] persistence.py
+    - [ ] common.py
+    - [ ] comparators.py ? (remove this file)
+    - [ ] word_bank.py
+    - [ ] motd.py
+    - [ ] typing_game/*
+    - [ ] minesweper/*
+    - [ ] last_letter/*
 - [?] windows ANSI detection
 
 # Simplification
