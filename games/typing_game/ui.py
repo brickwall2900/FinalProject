@@ -48,12 +48,12 @@ def print_word(word, future_words, settings):
     print(f">> {word} << {future_words_printed}")
     print("> ", end="")
 
-def print_congrats(time_taken, score, judgement_table):
+def print_congrats(time_taken, score, words_per_minute, judgement_table):
     submitted = False
     message = ""
     while True:
         print("~~~^ CONGRATULATIONS ^~~~")
-        print(f"Congratulations! You took {time_taken:.2f} seconds to type all words.")
+        print(f"Congratulations! You took {time_taken:.2f} seconds ({words_per_minute} WPM) to type all words.")
         print()
         print(f"Your score is {score}. Good job!")
 
@@ -72,7 +72,7 @@ def print_congrats(time_taken, score, judgement_table):
         if chosen == 1:
             view_score_table(judgement_table)
         elif chosen == 2 and not submitted:
-            save_to_leaderboard(time_taken, score, judgement_table)
+            save_to_leaderboard(time_taken, score, words_per_minute, judgement_table)
             submitted = True
         elif chosen == 0:
             break

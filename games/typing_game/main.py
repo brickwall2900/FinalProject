@@ -86,9 +86,9 @@ def game(ctx, word_bank):
         user_typed_words.append(user_input)
 
     time_taken = time.time() - timestamp_start
-    success, score, judgement_table = __judge(words, user_typed_words, settings)
+    success, score, judgement_table, words_per_minute = __judge(words, user_typed_words, time_taken, settings)
     if success:
-        print_congrats(time_taken, score, judgement_table)
+        print_congrats(time_taken, score, words_per_minute, judgement_table)
     else:
         print(f"The score could not be calculated.")
 
@@ -143,14 +143,15 @@ def __validate_invariants(settings):
 
     return True
 
-def __judge(correct_input_list, user_input_list, settings):
+def __judge(correct_input_list, user_input_list, total_time, settings):
     if len(correct_input_list) != len(user_input_list):
         print_error("You did not type enough words or too much words to be judged. How?")
-        return False, 0, []
+        return False, 0, [], 0
 
     # list of tuples (correct_word, user_input_word, score)
     judgement_table = []
     total_score = 0
+    correct_word_count = 0
 
     for i in range(len(correct_input_list)):
         correct_input = correct_input_list[i]
@@ -160,16 +161,19 @@ def __judge(correct_input_list, user_input_list, settings):
 
         if not letter_count in settings["score_per_letter_count"]:
             print_error(f"Score per {letter_count}-letter word is missing right now... How come?")
-            return False, 0, []
+            return False, 0, [], 0
 
         given_score = settings["score_per_letter_count"][letter_count]
         is_correct = correct_input == user_input
         if is_correct:
+            correct_word_count += 1
             total_score += given_score
 
         judgement_table.append((correct_input, user_input, (given_score if is_correct else 0)))
+        
+    words_per_minute = int(correct_word_count // max(total_time / 60, 0.001))
 
-    return True, total_score, judgement_table
+    return True, total_score, judgement_table, words_per_minute
 
 
 def destroy(ctx):

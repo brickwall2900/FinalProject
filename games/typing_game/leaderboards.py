@@ -1,11 +1,8 @@
 from common import print_error, safeint, sort, get_whole_digits
 import persistence
 
-def save_to_leaderboard(time_taken, score, judgement_table):
+def save_to_leaderboard(time_taken, score, words_per_minute, judgement_table):
     name = input("What is your name? ")
-    # hmmm
-    # FIXME: my prefrontal cortex is shut down
-    # fuck
 
     leaderboard = persistence.load_persistence("leaderboard-typing_game")
     current_entry = 0
@@ -22,6 +19,7 @@ def save_to_leaderboard(time_taken, score, judgement_table):
     leaderboard[f"Entry{current_entry}"] = name
     leaderboard[f"Entry{current_entry}_time_taken"] = str(int(time_taken * 100))
     leaderboard[f"Entry{current_entry}_score"] = str(score)
+    leaderboard[f"Entry{current_entry}_words_per_minute"] = str(words_per_minute)
     leaderboard[f"Entry{current_entry}_judgement_count"] = str(len(judgement_table))
 
     for index in range(len(judgement_table)):
@@ -58,9 +56,10 @@ def __parse_leaderboard(loaded_leaderboard):
 
         time = safeint(loaded_leaderboard.get(entry_key + "_time_taken"))
         score = safeint(loaded_leaderboard.get(entry_key + "_score"))
+        words_per_minute = safeint(loaded_leaderboard.get(entry_key + "_words_per_minute"))
         judgement_table_count = safeint(loaded_leaderboard.get(entry_key + "_judgement_count"))
 
-        if time is None or score is None or judgement_table_count is None:
+        if time is None or score is None or judgement_table_count is None or words_per_minute is None:
             continue
 
         time = time / 100 # compensate float to int by division by 100
@@ -81,7 +80,7 @@ def __parse_leaderboard(loaded_leaderboard):
         if missing:
             continue
 
-        the_leaderboard.append((name, time, score, judgement_table))
+        the_leaderboard.append((name, time, score, words_per_minute, judgement_table))
 
     return the_leaderboard
 
@@ -101,8 +100,9 @@ def __paginate_and_navigate_leaderboard(leaderboard):
             name = entry[0]
             time = entry[1]
             score = entry[2]
+            words_per_minute = entry[3]
 
-            print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds; {score} pts.")
+            print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds, {words_per_minute} WPM; {score} pts.")
 
         show_prev = page_offset > 0
         show_next = page_end < page_count
@@ -135,7 +135,7 @@ def __paginate_and_navigate_leaderboard(leaderboard):
                 continue
             real_index = page_offset + (chosen - 1)
             leaderboard_entry = leaderboard[real_index]
-            view_score_table(leaderboard_entry[3], leaderboard_entry[0])
+            view_score_table(leaderboard_entry[4], leaderboard_entry[0])
 
 def view_leaderboard():
     loaded_leaderboard = persistence.load_persistence("leaderboard-typing_game")
@@ -169,7 +169,6 @@ def view_score_table(judgement_table, name=None):
         longest_user_word += 1
 
         page_end = min(page_count, page_offset + max_page_view)
-        items_on_page = page_end - page_offset
         
         for index in range(page_offset, page_end):
             entry = judgement_table[index]
