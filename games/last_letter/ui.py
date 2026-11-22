@@ -1,7 +1,43 @@
 from common import *
 
 def __about():
-    print("\x1b[30;47mWord Bomb \x1b[0m")
+    print("\x1b[37;1mWord Bomb is inspired by the online web-game Word Bomb!\x1b[0m")
+    print("\x1b[37mIt is a multiplayer take-turns game.\x1b[0m")
+    pause()
+    
+    print("\x1b[37mWhen it is your turn, you will be asked to come up with a word starting/ending with letters.\x1b[0m")
+    print()
+    print("\x1b[37mEXAMPLE:\x1b[0m")
+    print("\x1b[37;1mTYPE A WORD STARTING WITH:\x1b[0m")
+    print("\x1b[37;1mh__________\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[0m")
+    pause()
+    
+    print("\x1b[37mFind and type that word before the time runs out.\x1b[0m")
+    print()
+    print("\x1b[37;1mTYPE A WORD STARTING WITH:\x1b[0m")
+    print("\x1b[37;1mh__________\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[32mhello\x1b[0m")
+    pause()
+    
+    print("\x1b[37mRunning out of time will \x1b[91;1mcost you a life\x1b[37m. When your life reaches 0, you lose.\x1b[0m")
+    print()
+    print("\x1b[37;1mTYPE A WORD STARTING WITH:\x1b[0m")
+    print("\x1b[37;1mh__________\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[91muhhh i dont know lol\x1b[0m")
+    pause()
+    
+    print("\x1b[37mWhen you answer \x1b[32mcorrectly\x1b[37m, you advance to the next round.\x1b[0m")
+    print("\x1b[37mLongest one to survive gets to win 1st place.\x1b[0m")
+    print()
+    print("\x1b[37;1mTYPE A WORD ENDING WITH:\x1b[0m")
+    print("\x1b[37;1m_________llo\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[32mjello\x1b[0m")
+    pause()
 
 def __leaderboard_comparator(this, that):
     return this["ranking"] - that["ranking"]

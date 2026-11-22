@@ -1,7 +1,42 @@
 from common import *
 
 def __about():
-    print("\x1b[36mHi\x1b[0m")
+    print("\x1b[37;1mMath Murder tests your quick maths skills!\x1b[0m")
+    print("\x1b[37mIt is a multiplayer take-turns game.\x1b[0m")
+    pause()
+    
+    print("\x1b[37mWhen it is your turn, you will be asked to solve an equation.\x1b[0m")
+    print()
+    print("\x1b[37mEXAMPLE:\x1b[0m")
+    print("\x1b[37m6 + 7 = ???\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[0m")
+    pause()
+    
+    print("\x1b[37mSolve it before the time runs out.\x1b[0m")
+    print()
+    print("\x1b[37mEXAMPLE:\x1b[0m")
+    print("\x1b[37m6 + 7 = ???\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[32m13\x1b[0m")
+    pause()
+    
+    print("\x1b[37mRunning out of time will \x1b[91;1mcost you a life\x1b[37m. When your life reaches 0, you lose.\x1b[0m")
+    print()
+    print("\x1b[37mEXAMPLE:\x1b[0m")
+    print("\x1b[37m6 + 7 = ???\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[91m67\x1b[0m")
+    pause()
+    
+    print("\x1b[37mWhen you answer \x1b[32mcorrectly\x1b[37m, you advance to the next round.\x1b[0m")
+    print("\x1b[37mLongest one to survive gets to win 1st place.\x1b[0m")
+    print()
+    print("\x1b[37mEXAMPLE:\x1b[0m")
+    print("\x1b[37m13 - 3 = ???\x1b[0m")
+    print()
+    print("\x1b[37m> \x1b[32m10\x1b[0m")
+    pause()
 
 def __leaderboard_comparator(this, that):
     return this["ranking"] - that["ranking"]
