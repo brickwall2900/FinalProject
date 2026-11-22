@@ -32,6 +32,7 @@ def __save_game(game_context):
     serialized_game_context["board"] = __serialize_board(serialized_game_context["board"])
     serialized_game_context["mines"] = __serialize_mines(serialized_game_context["mines"])
     serialized_game_context["dirty"] = "False"
+    serialized_game_context["last_saved"] = time.strftime("%Y-%m-%d %H:%M:%S")
     success = persistence.save_persistence("minesweeper", serialized_game_context)
     return success
 
@@ -40,16 +41,16 @@ def __load_game():
 
     loaded_game_context = persistence.load_persistence("minesweeper")
     if loaded_game_context is None:
-        print("[!] The save file is not found or could not be loaded. Starting a new game instead.")
+        print("\x1b[31m[!] The save file is not found or could not be loaded. Starting a new game instead.\x1b[0m")
         return None
 
-    print(f"A save file is found. Last saved: {loaded_game_context['last_saved']}; Want to continue?")
-    print(" - [1]: Yes, load it!! <-- default")
-    print(" - [2]: No... do NOT load it!! (This will potentially overwrite and delete save data.)")
+    print(f"\x1b[33;1mA save file is found. Last saved: {loaded_game_context['last_saved']}; Want to continue?\x1b[0m")
+    print("\x1b[1m - [1]: Yes, load it!! <-- default\x1b[0m")
+    print("\x1b[2m - [2]: No... do NOT load it!! (This will potentially overwrite and delete save data.)\x1b[0m")
     
     choice = safeint(input("> "))
 
-    if choice is None or choice != 1:
+    if choice is not None and choice == 2:
         return None
 
     loaded_game_context["width"] = safeint(loaded_game_context["width"])
@@ -68,7 +69,7 @@ def __load_game():
 
     loaded_game_context["flag_count"] = safeint(loaded_game_context["flag_count"])
     loaded_game_context["dirty"] = str_to_bool(loaded_game_context["dirty"])
-    loaded_game_context["last_saved"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    loaded_game_context["last_saved"] = str(loaded_game_context["last_saved"])
 
     # as a failsafe
     if loaded_game_context["width"] is None \
@@ -78,7 +79,8 @@ def __load_game():
         or loaded_game_context["board"] is None \
         or loaded_game_context["mines"] is None \
         or loaded_game_context["flag_count"] is None \
-        or loaded_game_context["dirty"] is None:
+        or loaded_game_context["dirty"] is None \
+        or loaded_game_context["last_saved"] is None:
         print_error("Save file seems to be corrupt... Starting a new game instead. :\\")
         return None
 

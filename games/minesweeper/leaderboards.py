@@ -90,12 +90,21 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
     message = ""
 
     while True:
-        print(" ^^^ Leaderboard ^^^")
+        print("\x1b[30;43m ^^^ Leaderboard ^^^ \x1b[0m")
 
         page_end = min(page_count, page_offset + max_page_view)
         items_on_page = page_end - page_offset
 
         for index in range(page_offset, page_end):
+            if index == 0: # first
+                color_code = "\x1b[93;1m"
+            elif index == 1: # second
+                color_code = "\x1b[1;38;5;249m"
+            elif index == 2: # third
+                color_code = "\x1b[1;38;5;130m"
+            else:
+                color_code = "\x1b[1m"
+            
             entry = leaderboard[index]
             name = entry[0]
             time = entry[1]
@@ -103,18 +112,18 @@ def __paginate_and_navigate_leaderboard(game_context, leaderboard):
             height = entry[3]
             mine_count = entry[4]
 
-            print(f" - [{(index - page_offset) + 1}]: {name}; {time} seconds; {width}x{height} w/ {mine_count} mines.")
+            print(f"{color_code} - [{index - page_offset + 1}]: {name}; {time} seconds; {width}x{height} w/ {mine_count} mines.\x1b[0m")
 
         show_prev = page_offset > 0
         show_next = page_end < page_count
 
         print()
         if show_prev:
-            print(" - [Q]: Previous")
+            print("\x1b[1m - [Q]: Previous\x1b[0m")
         if show_next:
-            print(" - [W]: Next")
-        print(" - [0]: Exit")
-        print(message)
+            print("\x1b[1m - [W]: Next\x1b[0m")
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[36m{message!s}\x1b[0m")
         raw_chosen = input("> ").lower().strip()
         chosen = safeint(raw_chosen)
         message = ""

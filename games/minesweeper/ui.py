@@ -8,40 +8,42 @@ from games.minesweeper.mscommon import to_coordinate_numbers, to_real_numbers
 from games.minesweeper.saveload import __deserialize_board, __deserialize_mines
 
 def __about():
-    print("Minesweeper is a game in which you try to discriminate mines out from the board.\n \n" \
-            "That is, you correctly identify which is a mine and which is not using inference and logic!", "Minesweeper")
+    print("\x1b[37mMinesweeper is a game in which you try to discriminate mines out from the board.\x1b[0m")
+    print()
+    print("\x1b[37mThat is, you correctly identify which is a mine and which is not using inference and logic!\x1b[0m")
 
     pause()
-    print("This game takes place on an MxN tiles, in which any number of those tiles may contain a mine in them.", "Minesweeper")
+    print("\x1b[37mThis game takes place on an MxN tiles, in which any number of those tiles may contain a mine in them.\x1b[0m")
 
-    print("Example board:\n \n.2P\n1.1\n. .\n \n" \
-    ". is an \"unknown\" tile, meaning you don't know if it is a mine or not.\n" \
-    "1-8 tells you the adjacent mines on a tile.\n" \
-    "P is a flag. You can place those if you think that tile is a mine.\n", "Minesweeper")
-
-    pause()
-    print("IMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\n" \
-                "You are playing in a terminal. That means it might be unconventional for you to " \
-                "type to play Minesweeper or other games.\n \n" \
-                "Therefore, this version of Minesweeper introduces \"commands\" you can type in-game " \
-                "to play the game.", "Minesweeper")
+    print("\x1b[37mExample board:\n \n.\x1b[33m2\x1b[32;1mP\n\x1b[33;22m1\x1b[37m.\x1b[33m1\n\x1b[37m. .\n \n. is an \"unknown\" tile, meaning you don't know if it is a mine or not.\x1b[0m")
+    print("\x1b[33m1-8\x1b[37m tells you the adjacent mines on a tile.\x1b[0m")
+    print("\x1b[32;1mP\x1b[37;22m is a flag. You can place those if you think that tile is a mine.\x1b[0m")
 
     pause()
-    print("IMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\n \n" \
-                "c<r><c> - check mine at <row> <column>; clears neighbors iff they're not mines or they have adjacent mines\n \n" \
-                "f<r><c> - toggle flag at <row> <column>", "Minesweeper")
+    print("\x1b[37;1mIMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\x1b[0m")
+    print("\x1b[37;1mYou are playing in a terminal. That means it might be unconventional for you to type to play Minesweeper or other games.\x1b[0m")
+    print()
+    print("\x1b[37mTherefore, this version of Minesweeper introduces \"commands\" you can type in-game to play the game.\x1b[0m")
 
     pause()
-    print("IMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\n \n" \
-                "s<r><c> - check mines at a 3x3 radius from the center at <row><column>; " \
-                "if not on adjacent mine, does nothing;\n \n" \
-                "if on adjacent mine, checks if you've flagged the exact number of adjacent mines then " \
-                "checks the not flagged ones.")
+    print("\x1b[37;1mIMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\x1b[0m")
+    print()
+    print("\x1b[37mc<r><c> - check mine at <row> <column>; clears neighbors iff they're not mines or they have adjacent mines\x1b[0m")
+    print()
+    print("\x1b[37mf<r><c> - toggle flag at <row> <column>", "Minesweeper\x1b[0m")
 
     pause()
-    print("You LOSE if you check a tile that is a mine.\n"\
-                    "You WIN if you check all tiles that is not a mine.\n \n"\
-                    "You can read countless tutorials on how to play Minesweeper out there. Good luck and don't die! >:)", "Minesweeper")
+    print("\x1b[37;1mIMPORTANT NOTE!! How to play this game on this implementation of Minesweeper:\x1b[0m")
+    print()
+    print("\x1b[37ms<r><c> - check mines at a 3x3 radius from the center at <row><column>; if not on adjacent mine, does nothing;\x1b[0m")
+    print()
+    print("\x1b[37mif on adjacent mine, checks if you've flagged the exact number of adjacent mines then checks the not flagged ones.\x1b[0m")
+
+    pause()
+    print("\x1b[37mYou \x1b[31;1mLOSE\x1b[37m if you check a tile that is a mine.\x1b[0m")
+    print("\x1b[37mYou \x1b[32;1mWIN\x1b[37m if you check all tiles that is not a mine.\x1b[0m")
+    print()
+    print("\x1b[92mYou can read countless tutorials on how to play Minesweeper out there. Good luck and don't die! >:)\x1b[0m")
     pause()
 
 def __choose_difficulty():
@@ -49,14 +51,14 @@ def __choose_difficulty():
 
     message = ""
     while True:
-        print(" ??? Choose Difficulty ???")
-        print(" - [1]: Easy (9x9 tiles)")
-        print(" - [2]: Intermediate (16x16 tiles)")
-        print(" - [3]: Hard (30x16 tiles)")
-        print("... or specify <width>x<height>; like \"20x30\"")
+        print("\x1b[30;47m ??? Choose Difficulty ??? \x1b[0m")
+        print("\x1b[1m - [1]: Easy (9x9 tiles)\x1b[0m")
+        print("\x1b[1m - [2]: Intermediate (16x16 tiles)\x1b[0m")
+        print("\x1b[1m - [3]: Hard (30x16 tiles)\x1b[0m")
+        print("\x1b[2m... or specify <width>x<height>; like \"20x30\"\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message}\x1b[0m")
         raw_choice = input("> ").strip()
         chosen = safeint(raw_choice)
 
@@ -115,68 +117,58 @@ def __draw_grid(game_context):
     game_visual_height -= 1
     for y in range(game_visual_height):
         if y == 0: # title
-            print("Minesweeper")
+            print("\x1b[30;42;1;4mMinesweeper\x1b[0m")
             continue
         elif y == 1 or y == game_visual_height - 1: # border
-            print("=" * game_visual_width)
+            print(f"\x1b[37m{'=' * game_visual_width!s}\x1b[0m")
             continue
         elif y == game_visual_height - 2: # bottom space
-            print(" ", end="")
+            print("\x1b[37m \x1b[0m", end="")
             continue
         # else:
         #     print(" ", end="")
         for x in range(game_visual_width):
             if y == 2:
                 if x >= 2:
-                    print(to_coordinate_numbers(x - 2), end="")
+                    print(f"\x1b[37m{to_coordinate_numbers(x - 2)} \x1b[0m", end="")
                 elif x == 1:
-                    print("c", end="")
+                    print("\x1b[37;1;5mc\x1b[0m", end="")
                 elif x == 0:
-                    print("r", end="")
+                    print("\x1b[37;1;5mr\x1b[0m", end="")
             elif y > 2:
                 if x == 0:
-                    print(to_coordinate_numbers(y - 3), end="")
+                    print(f"\x1b[37m{to_coordinate_numbers(y - 3)}\x1b[0m", end="")
                 elif x > 1:
                     board_value = "?"
                     board = game_context["board"]
                     board_index = (y-3) * game_width + (x-2)
                     board_raw = board[board_index]
                     if board_raw == TILE_UNKNOWN:
-                        board_value = "."
+                        board_value = "\x1b[37m.\x1b[0m"
                     elif board_raw == TILE_MINE:
-                        board_value = "X"
+                        board_value = "\x1b[37;41;5;1mX\x1b[0m"
                     elif board_raw == TILE_FLAG:
-                        board_value = "P"
+                        board_value = "\x1b[32;1mP\x1b[0m"
                     elif board_raw == TILE_CLEAR:
-                        board_value = " "
+                        board_value = "\x1b[37m \x1b[0m"
                     elif 0 <= board_raw and board_raw <= 10:
                         board_value = str(board_raw)
-                    print(board_value, end="")
+                    print(f"\x1b[37m{board_value} \x1b[0m", end="")
                 else:
-                    print(" ", end="")
+                    print("\x1b[37m \x1b[0m", end="")
             # else:
                 # print(" ", end="")    
-        print("")
-
-
+        print()
 
 def __user_input(game_context):
-    print("TIME :")
-    print(f"{game_context['time']:.2f} secs")
-    print(" ")
-    print("FLAGS:")
-    print(f" {game_context['flag_count'] if game_context['flag_count'] is not None else '???'} flags")
-    print(" ")
-    print("Commands:")
-    print("  * x<r><c>")
-    print("  checks for a mine")
-    print("  * f<r><c>")
-    print("  puts down a flag")
-    print("  * s<r><c>")
-    print("  checks for mines in 3x3 area iff adj tiles are OK (flagged)")
-    print("  * /exit")
-    print("  closes the game")
-    print("Command: ", end="")
+    print(f"\x1b[37;4;1mTIME \x1b[21;24m: {game_context['time']:.2f} secs\x1b[0m")
+    print(f"\x1b[37;4;1mFLAGS\x1b[24m: {(game_context['flag_count'] if game_context['flag_count'] is not None else '???')} flags\x1b[0m")
+    print("\x1b[37;4;1mCommands:\x1b[0m")
+    print("\x1b[37;1m  * x<r><c> <-\x1b[2m checks for a mine\x1b[0m")
+    print("\x1b[37;1m  * f<r><c> <-\x1b[2m puts down a flag\x1b[0m")
+    print("\x1b[37;1m  * s<r><c> <-\x1b[2m checks for mines in 3x3 area iff adj tiles are OK (flagged)\x1b[0m")
+    print("\x1b[37;1m  * /exit   <-\x1b[2m closes the game\x1b[0m")
+    print("\x1b[37;1mCommand: \x1b[0m", end="")
     return input()
 
 def __print_congrats(game_context):
@@ -188,13 +180,13 @@ def __print_congrats(game_context):
     message = ""
     time_taken = game_context["time"]
     while True:
-        print("~~~^ CONGRATULATIONS ^~~~")
-        print(f"Congratulations! You took {time_taken:.2f} seconds to find all mines.")
+        print("\x1b[30;43m ~~~^ CONGRATULATIONS ^~~~ \x1b[0m")
+        print(f"\x1b[37mCongratulations! You took \x1b[32m{time_taken:.2f} seconds to find all mines.\x1b[0m")
 
-        print(" - [1] Submit to Leaderboard")
+        print("\x1b[1m - [1] Submit to Leaderboard\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message}\x1b[0m")
 
         chosen = safeint(input("> "))
         message = ""

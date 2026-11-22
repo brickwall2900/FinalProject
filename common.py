@@ -117,14 +117,14 @@ def list_safe_get(the_list, index):
 
 def print_error(value):
     ''' Prints an error on the screen. '''
-    print(" !!! [ERROR] !!! ")
-    print(value)
+    print("\x1b[41;37;5m !!! [ERROR] !!! \x1b[0m")
+    print(f"\x1b[91;1m{value}\x1b[0m")
     print()
     pause()
 
 def pause():
     ''' Pauses execution until the user presses Enter. '''
-    print("Press [ENTER] to continue... ", end="")
+    print("\x1b[33m\x1b[1mPress [ENTER] to continue... \x1b[0m", end="")
     input()
     print()
 

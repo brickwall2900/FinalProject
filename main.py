@@ -12,7 +12,7 @@ from games.math_murder.main import call as math_murder
 def preload_stuff(ctx):
     ''' Preload words and message of the day into the global context. '''
     
-    print("Preloading stuff...")
+    print("\x1b[1mPreloading stuff...\x1b[0m")
     
     word_bank_path = os.path.join("data", "english3.txt")
     motd_path = os.path.join("data", "motd.txt")
@@ -30,30 +30,30 @@ def preload_stuff(ctx):
     ctx["motd"] = message_of_the_day if message_of_the_day is not None \
         else "(2) Email: You have no new messages today."
     
-    print("Yay! Preloading finished!")
+    print("\x1b[92mYay! Preloading finished!\x1b[0m")
     return True
 
 def greet(ctx):
     ''' Greets the user and shows the message of the day. '''
     
     print()
-    print("Hello, user!")
-    print(ctx["motd"])
+    print("\x1b[92mHello, user!\x1b[0m")
+    print(f"\x1b[37m{ctx['motd']}\x1b[0m")
     
 def show_games_and_choose(ctx):
     ''' Shows a list of games and lets the user choose which game to play. '''
     
     message = ""
     while True:
-        print(" ~~~ [Game Selecton] ~~~")
-        print("The Typing Game tests your typing skills by you typing words with speed and accuracy!")
-        print(" - [1]: Typing Game")
-        print(" - [2]: Minesweeper")
-        print(" - [3]: Word Bomb")
-        print(" - [4]: Math Murder")
+        print("\x1b[30;47m ~~~ [Game Selecton] ~~~ \x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [1]: Typing Game\x1b[0m")
+        print("\x1b[1m - [2]: Minesweeper\x1b[0m")
+        print("\x1b[1m - [3]: Word Bomb\x1b[0m")
+        print("\x1b[1m - [4]: Math Murder\x1b[0m")
+        print()
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33;1m{message}\x1b[0m")
         chosen = safeint(input("> "))
 
         message = ""
@@ -71,7 +71,7 @@ def show_games_and_choose(ctx):
         elif chosen == 4:
             math_murder(ctx)
         elif chosen == 0:
-            print("BYEEE!!")
+            print("\x1b[32mBYEEE!!\x1b[0m")
             break
         else:
             message = "Invalid option, try again."
@@ -87,7 +87,7 @@ def main():
         print_error("Preloading failed.")
         return
     
-    print("*" * 20)
+    print(f"\x1b[37m{'*' * 20}\x1b[0m")
     print()
     
     greet(global_context)

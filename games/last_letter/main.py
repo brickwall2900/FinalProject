@@ -17,13 +17,13 @@ def run(g_ctx):
 
     message = ""
     while True:
-        print(" ~~~ [!] Word Bomb [!] ~~~")
-        print("Word Bomb is a multiplayer game. Come up with words that have the first or last letter! Last one standing alive wins.")
-        print(" - [1]: PLAY!!!")
-        print(" - [2]: About")
+        print("\x1b[30;43m ~~~ [!] Word Bomb [!] ~~~\x1b[0m")
+        print("\x1b[37mWord Bomb is a multiplayer game. Come up with words that have the first or last letter! Last one standing alive wins.\x1b[0m")
+        print("\x1b[1m - [1]: PLAY!!!\x1b[0m")
+        print("\x1b[1m - [2]: About\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message!s}\x1b[0m")
         chosen = safeint(input("> "))
 
         message = ""
@@ -82,14 +82,13 @@ def game(words):
     for id in range(number_of_players):
         players.append(__setup_player(id))
 
-    print("You can either have two or more keyboards connected to the same computer albeit with sabotage...OR " \
-    "share one keyboard... albeit with contention.")
+    print("\x1b[37mYou can either have two or more keyboards connected to the same computer albeit with sabotage...OR share one keyboard... albeit with contention.\x1b[0m")
     print()
 
-    print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}")
+    print(f"\x1b[37;1mPlayers: \x1b[2m{__count(players, False)}\x1b[22m / Bots: \x1b[2m{__count(players, True)}\x1b[0m")
     ready = yes_or_no("Are y'all ready")
     if not ready:
-        print("Okay; someone is not ready...")
+        print("\x1b[33mOkay; someone is not ready...\x1b[0m")
         return
 
     __core_game_loop(players, words)

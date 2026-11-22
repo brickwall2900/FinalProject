@@ -22,14 +22,14 @@ def run(g_ctx):
     
     message = ""
     while True:
-        print(" [*] Minesweeper [P]")
-        print("Minesweeper is a game where you avoid mines... Don't get blown up!")
-        print(" - [1]: Start")
-        print(" - [2]: Leaderboards")
-        print(" - [3]: About/Information")
+        print("\x1b[30;42m [*] Minesweeper [P] \x1b[0m")
+        print("\x1b[37mMinesweeper is a game where you avoid mines... Don't get blown up!\x1b[0m")
+        print("\x1b[1m - [1]: Start\x1b[0m")
+        print("\x1b[1m - [2]: Leaderboards\x1b[0m")
+        print("\x1b[1m - [3]: About/Information\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message}\x1b[0m")
         chosen = safeint(input("> "))
 
         message = ""
@@ -86,10 +86,10 @@ def __process_command(game_context, command):
         # ??? profit?
         # wait wtf"?
         if not is_game_over and game_context["dirty"]:
-            print("Game board is modified. Save game?")
-            print(" - [1]: Yes! <-- default")
-            print(" - [2]: No...")
-            print(" - [3]: Cancel...")
+            print("\x1b[37mGame board is modified. Save game?\x1b[0m")
+            print("\x1b[1m - [1]: Yes! <-- default\x1b[0m")
+            print("\x1b[2m - [2]: No...\x1b[0m")
+            print("\x1b[2m - [3]: Cancel...\x1b[0m")
             
             choice = safeint(input("> "))
 
@@ -143,7 +143,7 @@ def __process_command(game_context, command):
                 # game over lol
                 game_context["dead"] = True
                 persistence.remove_persistence("minesweeper")
-                print("YOU LOST! ;(", "Minesweeper")
+                print("\x1b[37;41;1;5mYOU LOST! ;(\x1b[0m")
                 pause()
                 for mx, my in mines:
                     tiles[my * game_width + mx] = TILE_MINE

@@ -13,13 +13,13 @@ def call(_unused):
 def run():
     message = ""
     while True:
-        print(" ~~~ [!] Math Murder [!] ~~~")
-        print("Math Murder is a multiplayer game, testing your quick math skills! Last one alive wins.")
-        print(" - [1]: PLAY!!!")
-        print(" - [2]: About")
+        print("\x1b[37;41m ~~~ [!] Math Murder [!] ~~~ \x1b[0m")
+        print("\x1b[37mMath Murder is a multiplayer game, testing your quick math skills! Last one alive wins.\x1b[0m")
+        print("\x1b[1m - [1]: PLAY!!!\x1b[0m")
+        print("\x1b[1m - [2]: About\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message!s}\x1b[0m")
         chosen = safeint(input("> "))
 
         message = ""
@@ -78,14 +78,13 @@ def game():
     for id in range(number_of_players):
         players.append(__setup_player(id))
 
-    print("You can either have two or more keyboards connected to the same computer albeit with sabotage... OR " \
-    "share one keyboard... albeit with contention.")
+    print("\x1b[37mYou can either have two or more keyboards connected to the same computer albeit with sabotage... OR share one keyboard... albeit with contention.\x1b[0m")
     print()
 
-    print(f"Players: {__count(players, False)} / Bots: {__count(players, True)}")
+    print(f"\x1b[37;1mPlayers: \x1b[2m{__count(players, False)}\x1b[22m / Bots: \x1b[2m{__count(players, True)}\x1b[0m")
     ready = yes_or_no("Are y'all ready")
     if not ready:
-        print("Okay; someone is not ready...")
+        print("\x1b[33mOkay; someone is not ready...\x1b[0m")
         return
 
     __core_game_loop(players)
@@ -131,7 +130,7 @@ def __core_game_loop(players):
                 time_taken = (time.time() - judge_timestamp)
                 if time_taken > time_seconds: # timed out
                     message = f"{name} timed out!\nThe answer was {correct_answer} if anyone was wondering."
-                    previous_answer = (previous_answer if previous_answer is not None else 2) // rounds
+                    previous_answer = (previous_answer if previous_answer is not None else 2) // (rounds if rounds > 0 else 1)
                     break
 
                 # judge time

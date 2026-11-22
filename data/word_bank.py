@@ -8,7 +8,7 @@ def try_loading_words(word_bank_filepath):
         return None
 
     words = []    
-    print("Loading words...")
+    print("\x1b[34mLoading words...\x1b[0m")
 
     with open(word_bank_filepath, "rt") as file:
         while True:
@@ -24,7 +24,7 @@ def try_loading_words(word_bank_filepath):
 
             words.extend(line)
     
-    print(f"{len(words)} words loaded successfully!")
+    print(f"\x1b[32m{len(words)} words loaded successfully!\x1b[0m")
 
     return words
 

@@ -14,15 +14,15 @@ def load_settings(ctx):
     # load settings
     settings_loaded = persistence.load_persistence("typing_game")
     if settings_loaded is None:
-        print("[+] New settings will be saved for this game.")
+        print("\x1b[1m[+] New settings will be saved for this game.\x1b[0m")
         save_settings(ctx["settings"])
     else:
         parsed_settings = __parse_settings(settings_loaded)
         if parsed_settings is not None:
             ctx["settings"] = parsed_settings
         else:
-            print("[*] Settings file may be corrupt. Using defaults.")
-        print("[*] Loaded settings!")
+            print("\x1b[33;1m[*] Settings file may be corrupt. Using defaults.\x1b[0m")
+        print("\x1b[32;1m[*] Loaded settings!\x1b[0m")
 
 def __parse_settings(settings_loaded):
     ''' Returns a settings dict parsed from settings_loaded. ''' 
@@ -62,18 +62,18 @@ def save_settings(settings):
         saved_settings[f"score_per_letter_count_{letter_count}"] = str(list_safe_get(settings.get("score_per_letter_count"), letter_count))
 
     persistence.save_persistence("typing_game", saved_settings)
-    print("[+] Saved settings!")
+    print("\x1b[32;1m[+] Saved settings!\x1b[0m")
 
 def settings(settings):
     message = ""
     while True:
-        print(" *** Settings ***")
-        print(" - [1]: Words shuffled randomly")
-        print(" - [2]: Show words in advance")
-        print(" - [3]: Letter counts")
+        print("\x1b[30;47m *** Settings *** \x1b[0m")
+        print("\x1b[1m - [1]: Words shuffled randomly\x1b[0m")
+        print("\x1b[1m - [2]: Show words in advance\x1b[0m")
+        print("\x1b[1m - [3]: Letter counts\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33m{message}\x1b[0m")
         chosen = safeint(input("> "))
         
         if chosen is None:
@@ -94,21 +94,21 @@ def settings(settings):
             message = "Invalid option, try again."
 
 def __edit_boolean_setting(settings, key, name, description):
-    print("[!] ", end="")
-    print(name)
-    print(description)
+    print("\x1b[30;47m[!] ", end="")
+    print(f"{name}\x1b[0m")
+    print(f"\x1b[1m{description}\x1b[0m")
 
     current_value = settings.get(key)
 
-    print(f" - [1]: Toggle ({current_value} -> {not current_value})")
-    print(" - [Any]: Leave it as it is")
+    print(f"\x1b[1m - [1]: Toggle ({current_value} -> {not current_value})\x1b[0m")
+    print("\x1b[1m - [Any]: Leave it as it is\x1b[0m")
 
     chosen = safeint(input("> "))
     if chosen is not None and chosen == 1:
         settings[key] = not settings.get(key)
-        print("[+] Toggled.")
+        print("\x1b[32m[+] Toggled.\x1b[0m")
     else:
-        print("[.] Left as it is.")
+        print("\x1b[33m[.] Left as it is.\x1b[0m")
 
 def __edit_letter_count_subsetting(settings, key, prompt, error_condition_message):
     letter_count = safeint(input("How many letters to change? "))
@@ -130,20 +130,20 @@ def __edit_letter_counts(settings):
     letter_count_to_include = settings.get("letter_count_to_include", [])
     message = ""
     while True:
-        print("[!] Letter counts")
-        print("Current included letter counts for game: ")
+        print("\x1b[30;47m[!] Letter counts\x1b[0m")
+        print("\x1b[30;47mCurrent included letter counts for game: \x1b[0m")
         for letter_count in letter_count_to_include:
             word_count = settings.get('word_count_per_letter_count', {}).get(letter_count, '0')
             score = settings.get('score_per_letter_count', {}).get(letter_count, '0')
-            print(f"* {letter_count}-letter words: {word_count} words, {score} points")
+            print(f"\x1b[2m* {letter_count}-letter words: {word_count} words, {score} points\x1b[0m")
 
-        print(" - [1]: Add letter count")
-        print(" - [2]: Remove letter count")
-        print(" - [3]: Change word count")
-        print(" - [4]: Change score")
+        print("\x1b[1m - [1]: Add letter count\x1b[0m")
+        print("\x1b[1m - [2]: Remove letter count\x1b[0m")
+        print("\x1b[1m - [3]: Change word count\x1b[0m")
+        print("\x1b[1m - [4]: Change score\x1b[0m")
         print()
-        print(" - [0]: Back")
-        print(message)
+        print("\x1b[1m - [0]: Back\x1b[0m")
+        print(f"\x1b[33m{message}\x1b[0m")
 
         chosen = safeint(input("> "))
         message = ""
@@ -191,9 +191,9 @@ def __edit_letter_counts(settings):
             settings["letter_count_to_include"] = letter_count_to_include
         elif chosen == 3:
             message = __edit_letter_count_subsetting(settings, "word_count_per_letter_count",
-                                           "How many words should show up?", "Invalid number of words")
+                                           "How many words should show up? ", "Invalid number of words")
         elif chosen == 4:
             message = __edit_letter_count_subsetting(settings, "score_per_letter_count",
-                                            "How many points is the word worth?", "Invalid score number")
+                                            "How many points is the word worth? ", "Invalid score number")
         else:
-            print("Invalid option, try again.")
+            print("\x1b[31mInvalid option, try again.\x1b[0m")

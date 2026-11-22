@@ -29,15 +29,15 @@ def run(g_ctx):
 
     message = ""
     while True:
-        print(" ~~~ The Typing Game ~~~")
-        print("The Typing Game tests your typing skills by you typing words with speed and accuracy!")
-        print(" - [1]: Start")
-        print(" - [2]: Leaderboards")
-        print(" - [3]: Settings")
-        print(" - [4]: About")
+        print("\x1b[30;47m ~~~ The Typing Game ~~~ \x1b[0m")
+        print("\x1b[37mThe Typing Game tests your typing skills by you typing words with speed and accuracy!\x1b[0m")
+        print("\x1b[1m - [1]: Start\x1b[0m")
+        print("\x1b[1m - [2]: Leaderboards\x1b[0m")
+        print("\x1b[1m - [3]: Settings\x1b[0m")
+        print("\x1b[1m - [4]: About\x1b[0m")
         print()
-        print(" - [0]: Exit")
-        print(message)
+        print("\x1b[1m - [0]: Exit\x1b[0m")
+        print(f"\x1b[33;1m{message}\x1b[0m")
         chosen = safeint(input("> "))
 
         message = ""
@@ -65,13 +65,13 @@ def game(ctx, word_bank):
     success = __validate_invariants(settings)
 
     if not success:
-        print("One or more settings are invalid.")
+        print_error("One or more settings are invalid.")
         return
 
     words = __build_word_sequence(settings, word_bank)
 
     if words is None:
-        print("The game cannot be started.")
+        print("The game cannot be started, word bank is not loaded.")
         return
 
     print_countdown()
@@ -90,7 +90,7 @@ def game(ctx, word_bank):
     if success:
         print_congrats(time_taken, score, words_per_minute, judgement_table)
     else:
-        print(f"The score could not be calculated.")
+        print_error("The score could not be calculated.")
 
 # picks random words with a criteria, that `count`
 # words will be given with `letter_count` letters in it from the word bank.
